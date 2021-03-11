@@ -1,0 +1,11 @@
+{
+    "compilerOptions": {
+        "jsx": "react",
+        "noEmit": true,
+        "paths": {
+            "maishu-dilu-react": [
+                "../out/index.d.ts"
+            ]
+        }
+    },
+}
