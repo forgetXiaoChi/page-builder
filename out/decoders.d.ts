@@ -4,5 +4,5 @@ export declare type ServerContextData = {
     db: ConnectionOptions;
     staticRoot?: VirtualDirectory;
 };
-export declare let currentAppId: any;
-export declare let connection: any;
+export declare let currentAppId: (target: any, propertyKey: string | symbol, parameterIndex: number) => void;
+export declare let connection: (target: any, propertyKey: string | symbol, parameterIndex: number) => void;

@@ -5,7 +5,7 @@ const path = require("path");
 const maishu_node_mvc_1 = require("maishu-node-mvc");
 const maishu_admin_scaffold_1 = require("maishu-admin-scaffold");
 const maishu_node_data_1 = require("maishu-node-data");
-// import websiteConfig from "./website-config";
+const website_config_1 = require("./static/website-config");
 function start(settings) {
     let { componentStation, imageHost, port, db } = settings;
     maishu_node_data_1.createConnection(db);
@@ -14,10 +14,11 @@ function start(settings) {
         menuItem: settings.menuItems || []
     };
     let virtualPaths = maishu_admin_scaffold_1.getVirtualPaths("/static", path.join(__dirname, "../src/static"));
-    virtualPaths.static = path.join(__dirname, "../src/static");
-    virtualPaths["static/node_modules"] = path.join(__dirname, "../node_modules");
+    // virtualPaths["/static"] = path.join(__dirname, "../src/static");
+    // virtualPaths["/static/modules"] = path.join(__dirname, "../src/static/modules");
+    virtualPaths["/static/node_modules"] = path.join(__dirname, "../node_modules");
     let proxy = {};
-    proxy[`/design/(\\S*)`] = `${componentStation}/$1`;
+    proxy[`/${website_config_1.default.componentStationPath}/(\\S*)`] = `${componentStation}/$1`;
     proxy["^/ueditor/net/upload/(\\S*)"] = `http://${imageHost}/Images/upload/$1`;
     let mvcSettings = {
         port,

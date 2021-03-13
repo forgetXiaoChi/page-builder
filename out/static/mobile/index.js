@@ -19,7 +19,6 @@
         },
         baseUrl: '../',
         paths: {
-
             css: `${lib}/css`,
             text: `${lib}/text`,
             json: `${node_modules}/maishu-requirejs-plugins/src/json`,
@@ -50,39 +49,25 @@
             "taro-ui/dist": "node_modules/taro-ui/dist",
         }
     });
-
     window["h5"] = "weapp";
     requirejs(["react"], function (react) {
         window["react"] = window["React"] = react;
-
         define("react-default", function () {
             return { default: React };
-        })
-
+        });
         //================================================================================
         // 为缺失的 API 提供默认值
-        window["wx"] = {
-
-        }
+        window["wx"] = {};
         window["getCurrentPages"] = function () {
-
-        }
+        };
         window["getApp"] = function () {
-
-        }
+        };
         window["requirePlugin"] = function () {
-
-        }
+        };
         //================================================================================
-
-        requirejs(['mobile/user-application'],
-            function (appExports) {
-                let app = appExports.app;
-                app.run();
-            }
-        );
-
-    })
-
-
+        requirejs(['mobile/user-application'], function (appExports) {
+            let app = appExports.app;
+            app.run();
+        });
+    });
 })();
