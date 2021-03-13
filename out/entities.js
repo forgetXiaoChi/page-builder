@@ -6,7 +6,7 @@ var __decorate = (this && this.__decorate) || function (decorators, target, key,
     return c > 3 && r && Object.defineProperty(target, key, r), r;
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.DataObject = exports.PageRecord = void 0;
+exports.StoreInfo = exports.DataObject = exports.PageRecord = void 0;
 const maishu_node_data_1 = require("maishu-node-data");
 let PageRecord = class PageRecord {
 };
@@ -56,3 +56,15 @@ DataObject = __decorate([
     maishu_node_data_1.Entity("data_object")
 ], DataObject);
 exports.DataObject = DataObject;
+let StoreInfo = class StoreInfo {
+};
+__decorate([
+    maishu_node_data_1.PrimaryColumn({ type: "char", length: 36 })
+], StoreInfo.prototype, "id", void 0);
+__decorate([
+    maishu_node_data_1.Column({ type: "varchar", length: 50 })
+], StoreInfo.prototype, "theme", void 0);
+StoreInfo = __decorate([
+    maishu_node_data_1.Entity("store_info")
+], StoreInfo);
+exports.StoreInfo = StoreInfo;

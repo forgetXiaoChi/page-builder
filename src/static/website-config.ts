@@ -1,6 +1,3 @@
-import * as menuItems from "json!menu-items";
-
-console.log(menuItems)
 export let libVirtualPath = "lib";
 let websiteConfig = {
     //===================================================
@@ -10,8 +7,8 @@ let websiteConfig = {
     //===================================================
     requirejs: {
         paths: {
-
             "css": "node_modules/maishu-requirejs-plugins/src/css",
+            "json": "node_modules/maishu-requirejs-plugins/src/json",
 
             "react": "/node_modules/react/umd/react.development",
             "react-dom": "/node_modules/react-dom/umd/react-dom.development",
@@ -33,18 +30,21 @@ let websiteConfig = {
             "jquery": "node_modules/jquery/dist/jquery",
             "jquery-ui": `${libVirtualPath}/jquery-ui-1.12.1/jquery-ui`,
             "js-md5": "node_modules/js-md5/build/md5.min",
-            "taro-builder-core": "/node_modules/taro-builder-core/dist/index",
-            "taro-ui": `${libVirtualPath}/taro-ui`,
-            "taro-ui/dist": "node_modules/taro-ui/dist",
-            "@tarojs/components": `${libVirtualPath}/taro-components`,
-            "@tarojs/taro-h5": `${libVirtualPath}/taro-h5`,
-            "@tarojs/taro": `${libVirtualPath}/taro-h5`,
-            "nervjs": `${libVirtualPath}/nervjs`,
-            "tslib": "node_modules/tslib/tslib",
-            "htmlparser2": "node_modules/htmlparser2/",
         }
     },
-    menuItems,
-    containers: {}
+    containers: {
+
+    },
+    menuItems: [
+        {
+            id: "AE3789A2-0CF0-4D81-A7C0-E2C9324A1DDD", name: "页面列表", path: "#page-list",
+            children: [
+                { id: "3CE34AB9-7814-4FE5-85E2-ABA6AAF9C1FD", name: "页面编辑", path: "#page-edit", hidden: true }
+            ]
+        },
+        {
+            id: "7B13EC50-A398-4379-AED5-6AB3263EDB75", name: "主题", path: "#theme-list",
+        }
+    ]
 };
 export default websiteConfig;

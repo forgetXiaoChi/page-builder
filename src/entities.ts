@@ -1,4 +1,5 @@
-import { Entity, Column } from "maishu-node-data";
+import { expr } from "jquery";
+import { Entity, Column, PrimaryColumn } from "maishu-node-data";
 
 @Entity("page_data_record")
 export class PageRecord {
@@ -40,4 +41,14 @@ export class DataObject {
 
     @Column({ name: "application_id", type: "char", length: 36, nullable: true })
     applicationId?: string;
+}
+
+@Entity("store_info")
+export class StoreInfo {
+    /** 使用 Application Id 作为主键 */
+    @PrimaryColumn({ type: "char", length: 36 })
+    id: string;
+
+    @Column({ type: "varchar", length: 50 })
+    theme: string;
 }

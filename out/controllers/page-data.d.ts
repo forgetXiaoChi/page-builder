@@ -1,4 +1,3 @@
-import { ServerContext, ContentResult } from "maishu-node-mvc";
 import { Connection, SelectArguments } from "maishu-node-data";
 import { PageRecord } from "../entities";
 export declare class PageDataController {
@@ -24,7 +23,5 @@ export declare class PageDataController {
     items(conn: Connection, { ids }: {
         ids: string[];
     }): Promise<PageRecord[]>;
-    readWebsiteConfigFile(c: ServerContext): ContentResult;
     templateList(conn: Connection): Promise<PageRecord[]>;
-    menuItems(cd: ContextData): MenuItem[];
 }

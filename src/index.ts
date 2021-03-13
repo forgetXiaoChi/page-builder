@@ -2,6 +2,7 @@ import * as path from "path";
 import { startServer, Settings } from "maishu-node-mvc";
 import { getVirtualPaths } from "maishu-admin-scaffold";
 import { ConnectionOptions, createConnection } from "maishu-node-data";
+// import websiteConfig from "./website-config";
 
 export function start(settings: {
     port: number,
@@ -24,15 +25,16 @@ export function start(settings: {
     virtualPaths.static = path.join(__dirname, "../src/static");
     virtualPaths["static/node_modules"] = path.join(__dirname, "../node_modules");
 
+    let proxy: Settings["proxy"] = {};
+    proxy[`/design/(\\S*)`] = `${componentStation}/$1`;
+    proxy["^/ueditor/net/upload/(\\S*)"] = `http://${imageHost}/Images/upload/$1`;
+
     let mvcSettings: Settings = {
         port,
         contextData,
         websiteDirectory: __dirname,
         virtualPaths,
-        proxy: {
-            "/design/(\\S*)": `${componentStation}/$1`,
-            "^/ueditor/net/upload/(\\S*)": `http://${imageHost}/Images/upload/$1`,
-        }
+        proxy,
     }
 
     startServer(mvcSettings, "mvc");

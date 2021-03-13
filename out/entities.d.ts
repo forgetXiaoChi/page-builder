@@ -14,3 +14,8 @@ export declare class DataObject {
     createDateTime: Date;
     applicationId?: string;
 }
+export declare class StoreInfo {
+    /** 使用 Application Id 作为主键 */
+    id: string;
+    theme: string;
+}

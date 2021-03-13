@@ -11,7 +11,7 @@
             // "program": "${workspaceRoot}/node_modules/maishu-node-mvc/cli/mvc.js",
             "program": "${workspaceRoot}/demo/index.js",
             "outFiles": [],
-            "cwd": "${workspaceFolder}/out",
+            "cwd": "${workspaceFolder}/demo",
             "args": [
                 "./"
             ]

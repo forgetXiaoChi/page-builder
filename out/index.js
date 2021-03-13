@@ -5,6 +5,7 @@ const path = require("path");
 const maishu_node_mvc_1 = require("maishu-node-mvc");
 const maishu_admin_scaffold_1 = require("maishu-admin-scaffold");
 const maishu_node_data_1 = require("maishu-node-data");
+// import websiteConfig from "./website-config";
 function start(settings) {
     let { componentStation, imageHost, port, db } = settings;
     maishu_node_data_1.createConnection(db);
@@ -15,15 +16,15 @@ function start(settings) {
     let virtualPaths = maishu_admin_scaffold_1.getVirtualPaths("/static", path.join(__dirname, "../src/static"));
     virtualPaths.static = path.join(__dirname, "../src/static");
     virtualPaths["static/node_modules"] = path.join(__dirname, "../node_modules");
+    let proxy = {};
+    proxy[`/design/(\\S*)`] = `${componentStation}/$1`;
+    proxy["^/ueditor/net/upload/(\\S*)"] = `http://${imageHost}/Images/upload/$1`;
     let mvcSettings = {
         port,
         contextData,
         websiteDirectory: __dirname,
         virtualPaths,
-        proxy: {
-            "/design/(\\S*)": `${componentStation}/$1`,
-            "^/ueditor/net/upload/(\\S*)": `http://${imageHost}/Images/upload/$1`,
-        }
+        proxy,
     };
     maishu_node_mvc_1.startServer(mvcSettings, "mvc");
 }

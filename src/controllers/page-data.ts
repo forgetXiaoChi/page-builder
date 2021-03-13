@@ -1,12 +1,9 @@
-import { controller, action, routeData, serverContext, ServerContext, JavaScriptProcessor, ContentResult, contextData } from "maishu-node-mvc";
+import { controller, action, routeData } from "maishu-node-mvc";
 import { Connection, DataHelper, SelectArguments } from "maishu-node-data";
 import { PageRecord } from "../entities";
 import { errors } from "../static/errors";
 import { guid } from "maishu-toolkit";
-import * as fs from "fs";
 import { connection, currentAppId } from "../decoders";
-
-
 
 @controller("page-data")
 export class PageDataController {
@@ -91,24 +88,7 @@ export class PageDataController {
         return r;
     }
 
-    @action("/website-config.js")
-    readWebsiteConfigFile(@serverContext c: ServerContext) {
-        let physicalPath = c.rootDirectory.findFile("website-config.js");
-        console.assert(physicalPath != null);
-        let b = fs.readFileSync(physicalPath, { encoding: "utf8" });
-        b = JavaScriptProcessor.transformJS(b, {
-            "presets": [
-                ["@babel/preset-env", {
-                    "targets": { chrome: 58 }
-                }],
-            ],
-            plugins: [
-                ["@babel/plugin-transform-modules-amd", { noInterop: true }]
-            ]
-        })
-        return new ContentResult(b, { "Content-Type": `application/x-javascript; charset=utf8` });
-    }
-
+  
     @action("template-list")
     templateList(@connection conn: Connection) {
         if (!conn) throw errors.argumentNull("conn");
@@ -118,9 +98,5 @@ export class PageDataController {
 
     }
 
-    @action("/menu-items")
-    menuItems(@contextData cd: ContextData) {
-        return cd.menuItem;
-    }
 
 }

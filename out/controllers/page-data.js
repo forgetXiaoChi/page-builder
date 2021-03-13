@@ -24,7 +24,6 @@ const maishu_node_data_1 = require("maishu-node-data");
 const entities_1 = require("../entities");
 const errors_1 = require("../static/errors");
 const maishu_toolkit_1 = require("maishu-toolkit");
-const fs = require("fs");
 const decoders_1 = require("../decoders");
 let PageDataController = class PageDataController {
     list(conn, { args }) {
@@ -109,30 +108,11 @@ let PageDataController = class PageDataController {
             return r;
         });
     }
-    readWebsiteConfigFile(c) {
-        let physicalPath = c.rootDirectory.findFile("website-config.js");
-        console.assert(physicalPath != null);
-        let b = fs.readFileSync(physicalPath, { encoding: "utf8" });
-        b = maishu_node_mvc_1.JavaScriptProcessor.transformJS(b, {
-            "presets": [
-                ["@babel/preset-env", {
-                        "targets": { chrome: 58 }
-                    }],
-            ],
-            plugins: [
-                ["@babel/plugin-transform-modules-amd", { noInterop: true }]
-            ]
-        });
-        return new maishu_node_mvc_1.ContentResult(b, { "Content-Type": `application/x-javascript; charset=utf8` });
-    }
     templateList(conn) {
         if (!conn)
             throw errors_1.errors.argumentNull("conn");
         let pageRecords = conn.getRepository(entities_1.PageRecord).find({ select: ["id", "name"], where: { type: "template" } });
         return pageRecords;
-    }
-    menuItems(cd) {
-        return cd.menuItem;
     }
 };
 __decorate([
@@ -160,17 +140,9 @@ __decorate([
     __param(0, decoders_1.connection), __param(1, maishu_node_mvc_1.routeData)
 ], PageDataController.prototype, "items", null);
 __decorate([
-    maishu_node_mvc_1.action("/website-config.js"),
-    __param(0, maishu_node_mvc_1.serverContext)
-], PageDataController.prototype, "readWebsiteConfigFile", null);
-__decorate([
     maishu_node_mvc_1.action("template-list"),
     __param(0, decoders_1.connection)
 ], PageDataController.prototype, "templateList", null);
-__decorate([
-    maishu_node_mvc_1.action("/menu-items"),
-    __param(0, maishu_node_mvc_1.contextData)
-], PageDataController.prototype, "menuItems", null);
 PageDataController = __decorate([
     maishu_node_mvc_1.controller("page-data")
 ], PageDataController);

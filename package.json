@@ -44,7 +44,7 @@
     "dependencies": {
         "font-awesome": "^4.7.0",
         "js-md5": "^0.7.3",
-        "maishu-admin-scaffold": "^1.1.0",
+        "maishu-admin-scaffold": "^1.2.1",
         "maishu-chitu-react": "^1.27.0",
         "maishu-chitu-service": "^1.21.0",
         "maishu-dilu": "^1.9.1",

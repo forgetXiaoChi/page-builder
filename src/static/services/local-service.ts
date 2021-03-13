@@ -3,10 +3,10 @@ import { DataSourceSelectArguments, DataSourceSelectResult } from "maishu-wuzhui
 import { PageRecord } from "../../entities";
 import { pathConcat } from "maishu-toolkit";
 import { ComponentInfo } from "../model";
-import websiteConfig from "website-config";
+import websiteConfig from "../website-config";
 import { errorHandle } from "../error-handle";
 
-Service.headers["application-id"] = "7bbfa36c-8115-47ad-8d47-9e52b58e7efd";
+// Service.headers["application-id"] = "7bbfa36c-8115-47ad-8d47-9e52b58e7efd";
 
 export class LocalService extends Service {
 
@@ -124,9 +124,16 @@ export class LocalService extends Service {
             })
         })
     }
+
+    async setTheme(themeName: string) {
+        let url = this.url("set-theme");
+        let r = await this.postByJson(url, { themeName });
+        return r;
+    }
 }
 
-interface ComponentStationConfig {
+export interface ComponentStationConfig {
     components: ComponentInfo[],
-    groups: { name: string, id: string }[]
+    groups: { name: string, id: string }[],
+    themes: { name: string, path: string, title: string, image: string, }[],
 }

@@ -8,10 +8,10 @@ declare let requirejs: {
 };
 
 
-declare function define(module: string | string[], callback: Function): void;
+// declare function define(module: string | string[], callback: Function): void;
 
 declare module "website-config" {
-    let a: typeof import("../website-config");
+    let a: typeof import("./website-config");
     export = a;
 }
 
