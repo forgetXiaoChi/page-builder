@@ -4,6 +4,6 @@ export declare class HomeController {
     selectTheme(appId: string, conn: Connection, d: {
         themeName: string;
     }): Promise<{
-        id: string;
+        id: any;
     }>;
 }

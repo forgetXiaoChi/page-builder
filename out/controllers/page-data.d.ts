@@ -3,7 +3,7 @@ import { PageRecord } from "../entities";
 export declare class PageDataController {
     list(conn: Connection, { args }: {
         args: SelectArguments;
-    }): Promise<import("maishu-node-data").SelectResult<PageRecord>>;
+    }): Promise<any>;
     add(conn: Connection, { item }: {
         item: PageRecord;
     }, appId: any): Promise<Partial<PageRecord>>;
@@ -23,5 +23,5 @@ export declare class PageDataController {
     items(conn: Connection, { ids }: {
         ids: string[];
     }): Promise<PageRecord[]>;
-    templateList(conn: Connection): Promise<PageRecord[]>;
+    templateList(conn: Connection): any;
 }
