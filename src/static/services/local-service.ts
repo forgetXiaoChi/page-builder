@@ -72,9 +72,14 @@ export class LocalService extends Service {
         return config.groups;
     }
 
+    private getThemeName(): string {
+        throw new Error("Not implement.")
+        // return "";
+    }
+
     private _componentStationConfig: ComponentStationConfig;
     async componentStationConfig(): Promise<ComponentStationConfig> {
-        let componentStationPath = websiteConfig.componentStationPath;
+        let componentStationPath = websiteConfig.componentStations[this.getThemeName()];// websiteConfig.componentStationPath;
         if (this._componentStationConfig != null)
             return this._componentStationConfig;
 
@@ -87,7 +92,7 @@ export class LocalService extends Service {
             this._componentStationConfig = await this.loadJS(url);
 
         let _componentInfos = this._componentStationConfig.components;
-        if (!_componentInfos["pathContacted"]) {
+        if (_componentInfos["pathContacted"] != undefined) {
             _componentInfos["pathContacted"] = true;
             _componentInfos.forEach(o => {
                 if (o.path != null)
@@ -117,9 +122,9 @@ export class LocalService extends Service {
 
     async loadJS<T>(jsPath: string): Promise<T> {
         return new Promise((resolve, reject) => {
-            requirejs([jsPath], (mod) => {
+            requirejs([jsPath], (mod: any) => {
                 resolve(mod.default || mod)
-            }, err => {
+            }, (err: any) => {
                 reject(err)
             })
         })

@@ -7,6 +7,7 @@
         "declaration": true,
         "jsx": "react",
         "allowJs": false,
+        "strictNullChecks": true,
     },
     "exclude": [
         "sample-app",

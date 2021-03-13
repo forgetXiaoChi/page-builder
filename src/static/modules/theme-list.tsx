@@ -31,19 +31,19 @@ export default class extends React.Component<Props, State> {
     render() {
 
         let { themes } = this.state;
-        if (this.state.themes === undefined) {
+        if (themes === undefined) {
             return <div className="empty">{strings.dataLoading}</div>
         }
 
 
-        if (this.state.themes.length == 0) {
+        if (themes.length == 0) {
             return <div className="empty">{strings.dataEmpty}</div>
         }
 
         return <div className="row">
             {themes.map(o =>
                 <div key={o.path} className="col-md-3 text-center">
-                    <img src={pathConcat(websiteConfig.componentStationPath, o.image)} className="img-responsive"
+                    <img src={pathConcat(websiteConfig.componentStations[o.name], o.image)} className="img-responsive"
                         style={{ border: "solid 1px #cccccc" }} />
 
                     <button className="btn btn-primary btn-block" style={{ marginTop: 20 }}

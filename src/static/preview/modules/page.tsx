@@ -17,7 +17,7 @@ interface Props {
 
 export default class PageView extends React.Component<Props, State> {
     private localService: LocalService;
-    constructor(props) {
+    constructor(props: Props) {
         super(props);
 
         this.state = { pageData: this.emptyPageData() };

@@ -239,8 +239,8 @@ export default class PCPageEdit extends React.Component<Props, State> {
         }
     }
 
-    setPageDesigner(e: PageDesigner) {
-        if (!e) return;
+    setPageDesigner(e: PageDesigner | null) {
+        if (e == null) return;
         this.pageDesigner = this.pageDesigner || e;
         this.validator = new FormValidator(this.pageDesigner.element,
             { name: "name", rules: [r.required("请输入页面名称")] }
@@ -249,7 +249,7 @@ export default class PCPageEdit extends React.Component<Props, State> {
 
     changeTemplate(templateId: string) {
         let { pageRecord, templateRecord } = this.state;
-        pageRecord.templateId = templateId || null;
+        pageRecord.templateId = templateId;
 
         if (!templateId) {
             if (templateRecord != null) {

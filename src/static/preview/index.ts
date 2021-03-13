@@ -56,7 +56,7 @@
         }
     });
 
-    requirejs(["application"], function (mod) {
+    requirejs(["application"], function (mod: any) {
         mod.app.run();
     })
 

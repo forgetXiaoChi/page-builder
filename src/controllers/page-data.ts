@@ -56,7 +56,7 @@ export class PageDataController {
     }
 
     @action()
-    async item(@connection conn: Connection, @routeData { name, id }, @currentAppId appId) {
+    async item(@connection conn: Connection, @routeData { name, id }: { name: string, id: string }, @currentAppId appId) {
         if (name == null && id == null)
             throw new Error("One of name or id of route data field can not be null.")
 
@@ -88,7 +88,7 @@ export class PageDataController {
         return r;
     }
 
-  
+
     @action("template-list")
     templateList(@connection conn: Connection) {
         if (!conn) throw errors.argumentNull("conn");

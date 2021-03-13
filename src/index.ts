@@ -1,18 +1,20 @@
 import * as path from "path";
-import { startServer, Settings } from "maishu-node-mvc";
+import { startServer, Settings as MVCSettings } from "maishu-node-mvc";
 import { getVirtualPaths } from "maishu-admin-scaffold";
 import { ConnectionOptions, createConnection } from "maishu-node-data";
 import websiteConfig from "./static/website-config";
 
-export function start(settings: {
+interface Settings {
     port: number,
-    componentStation: string,
+    componentStations: { [key: string]: string },
     imageHost: string,
     db: ConnectionOptions,
     menuItems?: MenuItem[],
-}) {
+}
 
-    let { componentStation, imageHost, port, db } = settings;
+export function start(settings: Settings) {
+
+    let { componentStations, imageHost, port, db } = settings;
 
     createConnection(db);
 
@@ -22,15 +24,19 @@ export function start(settings: {
     };
 
     let virtualPaths = getVirtualPaths("/static", path.join(__dirname, "../src/static"));
-    // virtualPaths["/static"] = path.join(__dirname, "../src/static");
-    // virtualPaths["/static/modules"] = path.join(__dirname, "../src/static/modules");
     virtualPaths["/static/node_modules"] = path.join(__dirname, "../node_modules");
+    virtualPaths["/static/content"] = path.join(__dirname, "../content");
 
-    let proxy: Settings["proxy"] = {};
-    proxy[`/${websiteConfig.componentStationPath}/(\\S*)`] = `${componentStation}/$1`;
+    let proxy: MVCSettings["proxy"] = {};
+    // proxy[`/${websiteConfig.componentStationPath}/(\\S*)`] = `${componentStation}/$1`;
     proxy["^/ueditor/net/upload/(\\S*)"] = `http://${imageHost}/Images/upload/$1`;
+    for (let c in componentStations) {
+        proxy[c] = componentStations[c];
+        virtualPaths[`/${c}/(\\S*)`] = `${componentStations[c]}/$1`;
+    }
 
-    let mvcSettings: Settings = {
+
+    let mvcSettings: MVCSettings = {
         port,
         contextData,
         websiteDirectory: __dirname,
