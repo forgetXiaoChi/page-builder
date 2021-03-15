@@ -27,15 +27,16 @@ export function start(settings: Settings) {
     virtualPaths["/static/node_modules"] = path.join(__dirname, "../node_modules");
     virtualPaths["/static/content"] = path.join(__dirname, "../content");
     virtualPaths["/static/modules/content"] = path.join(__dirname, "../content/modules");
+    for (let themeName in websiteConfig.componentStations) {
+        virtualPaths[`/static/modules/${themeName}-page-edit.js`] = path.join(__dirname, "static/modules/pc-page-edit.js");
+    }
 
     let proxy: MVCSettings["proxy"] = {};
-    // proxy[`/${websiteConfig.componentStationPath}/(\\S*)`] = `${componentStation}/$1`;
     proxy["^/ueditor/net/upload/(\\S*)"] = `http://${imageHost}/Images/upload/$1`;
     let componentStations = websiteConfig.componentStations || {};
     for (let c in componentStations) {
         proxy[`/${c}/(\\S*)`] = `${componentStations[c]}/$1`;
     }
-
 
     let mvcSettings: MVCSettings = {
         port,

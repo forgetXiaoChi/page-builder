@@ -2,8 +2,6 @@ export let libVirtualPath = "lib";
 let websiteConfig = {
     //===================================================
     // 组件站点配置
-    componentStationConfig: "config.js",
-    // componentStationPath: "design",
     componentStations: {
         aixpi: `http://127.0.0.1:6739/aixpi`,
         flone: `http://127.0.0.1:6739/flone`,

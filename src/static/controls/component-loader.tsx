@@ -91,13 +91,12 @@ export class ComponentLoader {
 
             loadComponentType(type, this.isDesignMode).then(c => {
                 registerComponent(type, c.componentType);
-                console.assert(c.componentInfo != null);
-                this.loadComponentSuccess.fire({
-                    typeName: type, componentInfo: c.componentInfo,
-                    pageData: this._pageData
-                });
-
-
+                if (c.componentInfo != null) {
+                    this.loadComponentSuccess.fire({
+                        typeName: type, componentInfo: c.componentInfo,
+                        pageData: this._pageData
+                    });
+                }
             }).catch(err => {
                 console.error(err);
                 this.loadComponentFail.fire({ typeName: type });

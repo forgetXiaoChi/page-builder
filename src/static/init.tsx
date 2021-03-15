@@ -35,13 +35,13 @@ function toMenuItem(r: PageRecord): MenuItem {
 
     let pageName = r.name;
     if (pageName.endsWith("home")) {
-        return { id: r.id, name: "首页", type: "menu", sortNumber: 100, path: `#page-edit?name=${r.name}` };
+        return { id: r.id, name: "首页", type: "menu", sortNumber: 100, path: `#${r.themeName}-page-edit?name=${r.name}` };
     }
     else if (pageName.endsWith("product-list")) {
-        return { id: r.id, name: "商品列表", type: "menu", sortNumber: 110, path: `#page-edit?name=${r.name}` };
+        return { id: r.id, name: "商品列表", type: "menu", sortNumber: 110, path: `#${r.themeName}-page-edit?name=${r.name}` };
     }
     else if (pageName.endsWith("product")) {
-        return { id: r.id, name: "商品", type: "menu", sortNumber: 120, path: `#page-edit?name=${r.name}` }
+        return { id: r.id, name: "商品", type: "menu", sortNumber: 120, path: `#${r.themeName}-page-edit?name=${r.name}` }
     }
 
     return null;

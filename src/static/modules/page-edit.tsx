@@ -1,7 +1,7 @@
 import { DesignView } from "../controls/design-view/index";
 import * as React from "react";
 import { PageProps } from "maishu-chitu-react";
-import { buttonOnClick, Less } from "maishu-ui-toolkit";
+import { buttonOnClick } from "maishu-ui-toolkit";
 import { PageRecord } from "../../entities";
 import { LocalService } from "../services";
 import { FormValidator, rules as r } from "maishu-dilu"
@@ -104,7 +104,7 @@ export default class PageEdit extends React.Component<Props, State> {
     }
 
     preivew() {
-        window.open(`preview/index.html#page?id=${this.props.data.id}`, "_new")
+        window.open(`preview.html#page?id=${this.props.data.id}`, "_new")
     }
 
     render() {
