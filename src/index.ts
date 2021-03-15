@@ -6,7 +6,7 @@ import websiteConfig from "./static/website-config";
 
 interface Settings {
     port: number,
-    componentStations: { [key: string]: string },
+    // componentStations: { [key: string]: string },
     imageHost: string,
     db: ConnectionOptions,
     menuItems?: MenuItem[],
@@ -14,7 +14,7 @@ interface Settings {
 
 export function start(settings: Settings) {
 
-    let { componentStations, imageHost, port, db } = settings;
+    let { imageHost, port, db } = settings;
 
     createConnection(db);
 
@@ -26,13 +26,14 @@ export function start(settings: Settings) {
     let virtualPaths = getVirtualPaths("/static", path.join(__dirname, "../src/static"));
     virtualPaths["/static/node_modules"] = path.join(__dirname, "../node_modules");
     virtualPaths["/static/content"] = path.join(__dirname, "../content");
+    virtualPaths["/static/modules/content"] = path.join(__dirname, "../content/modules");
 
     let proxy: MVCSettings["proxy"] = {};
     // proxy[`/${websiteConfig.componentStationPath}/(\\S*)`] = `${componentStation}/$1`;
     proxy["^/ueditor/net/upload/(\\S*)"] = `http://${imageHost}/Images/upload/$1`;
+    let componentStations = websiteConfig.componentStations || {};
     for (let c in componentStations) {
-        proxy[c] = componentStations[c];
-        virtualPaths[`/${c}/(\\S*)`] = `${componentStations[c]}/$1`;
+        proxy[`/${c}/(\\S*)`] = `${componentStations[c]}/$1`;
     }
 
 

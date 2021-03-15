@@ -1,21 +1,22 @@
-import { Service } from "maishu-chitu-service";
+import { Callbacks, Service, ValueStore } from "maishu-chitu-service";
 import { DataSourceSelectArguments, DataSourceSelectResult } from "maishu-wuzhui-helper";
 import { PageRecord } from "../../entities";
-import { pathConcat } from "maishu-toolkit";
+import { errors, pathConcat } from "maishu-toolkit";
 import { ComponentInfo } from "../model";
 import websiteConfig from "../website-config";
 import { errorHandle } from "../error-handle";
 
-// Service.headers["application-id"] = "7bbfa36c-8115-47ad-8d47-9e52b58e7efd";
+Service.headers["application-id"] = "7bbfa36c-8115-47ad-8d47-9e52b58e7efd";
 
-export class LocalService extends Service {
+let service = new Service(err => errorHandle(err));
+
+export class LocalService {
 
     constructor() {
-        super(err => errorHandle(err))
     }
 
-    url(path: string): string {
-        let sitePath: string = null;
+    static url(path: string): string {
+        let sitePath: string | null = null;
         let pageUrl = location.hash.substr(1);
         if (pageUrl.startsWith("/")) {
             pageUrl = pageUrl.substr(1);
@@ -30,37 +31,32 @@ export class LocalService extends Service {
     }
 
     pageRecordList(args: DataSourceSelectArguments) {
-        let url = this.url("page-data/list");
-        return this.getByJson<DataSourceSelectResult<PageRecord>>(url, { args });
+        let url = LocalService.url("page-data/list");
+        return service.getByJson<DataSourceSelectResult<PageRecord>>(url, { args });
     }
     removePageRecord(id: string) {
-        let url = this.url("page-data/remove");
-        return this.postByJson(url, { id });
+        let url = LocalService.url("page-data/remove");
+        return service.postByJson(url, { id });
     }
     async addPageRecord(item: Partial<PageRecord>) {
-        let r = await this.postByJson(this.url("page-data/add"), { item });
+        let r = await service.postByJson(LocalService.url("page-data/add"), { item });
         Object.assign(item, r);
         return item;
     }
     async updatePageRecord(item: Partial<PageRecord>) {
-        let r = await this.postByJson(this.url("page-data/update"), { item });
+        let r = await service.postByJson(LocalService.url("page-data/update"), { item });
         Object.assign(item, r);
         return item;
     }
     async getPageRecord(id: string): Promise<PageRecord> {
-        let r = await this.getByJson<PageRecord>(this.url("page-data/item"), { id });
-        return r;
-    }
-    async getPageDataByName(name: string): Promise<PageRecord> {
-        let r = await this.getByJson<PageRecord>(this.url("page-data/item"), { name });
+        let r = await service.getByJson<PageRecord>(LocalService.url("page-data/item"), { id });
         return r;
     }
 
-    // async clientFiles(): Promise<string[]> {
-    //     let { protocol, host } = location;
-    //     let r = await this.get<string[]>(this.url(`clientFiles`));
-    //     return r;
-    // }
+    async getPageDataByName(name: string): Promise<PageRecord> {
+        let r = await service.getByJson<PageRecord>(LocalService.url("page-data/item"), { name });
+        return r;
+    }
 
     async componentInfos() {
         let config = await this.componentStationConfig();
@@ -72,40 +68,31 @@ export class LocalService extends Service {
         return config.groups;
     }
 
-    private getThemeName(): string {
-        throw new Error("Not implement.")
-        // return "";
-    }
-
     private _componentStationConfig: ComponentStationConfig;
     async componentStationConfig(): Promise<ComponentStationConfig> {
-        let componentStationPath = websiteConfig.componentStations[this.getThemeName()];// websiteConfig.componentStationPath;
+        let themenName = await this.getTheme();
+        let componentStationPath = websiteConfig.componentStations[themenName];
         if (this._componentStationConfig != null)
             return this._componentStationConfig;
 
-
-
-        let url = this.url(`${componentStationPath}/${websiteConfig.componentStationConfig}`);
-        if (url.endsWith(".json"))
-            this._componentStationConfig = await this.get<ComponentStationConfig>(url);
-        else
-            this._componentStationConfig = await this.loadJS(url);
+        let url = LocalService.url(`${themenName}/website-config.js`);
+        this._componentStationConfig = await this.loadJS(url);
 
         let _componentInfos = this._componentStationConfig.components;
-        if (_componentInfos["pathContacted"] != undefined) {
+        if (_componentInfos["pathContacted"] == undefined) {
             _componentInfos["pathContacted"] = true;
             _componentInfos.forEach(o => {
                 if (o.path != null)
-                    o.path = pathConcat(componentStationPath, o.path);
+                    o.path = pathConcat(themenName, o.path);
 
                 if (o.editor != null)
-                    o.editor = pathConcat(componentStationPath, o.editor);
+                    o.editor = pathConcat(themenName, o.editor);
 
                 if (o.design != null)
-                    o.design = pathConcat(componentStationPath, o.design);
+                    o.design = pathConcat(themenName, o.design);
 
                 if (o.layout != null)
-                    o.layout = pathConcat(componentStationPath, o.layout);
+                    o.layout = pathConcat(themenName, o.layout);
 
             })
         }
@@ -115,8 +102,8 @@ export class LocalService extends Service {
     }
 
     async templateList(): Promise<PageRecord[]> {
-        let url = this.url("page-data/template-list");
-        let r = this.getByJson<PageRecord[]>(url);
+        let url = LocalService.url("page-data/template-list");
+        let r = service.getByJson<PageRecord[]>(url);
         return r;
     }
 
@@ -130,11 +117,46 @@ export class LocalService extends Service {
         })
     }
 
+    /** 设置模板 */
     async setTheme(themeName: string) {
-        let url = this.url("set-theme");
-        let r = await this.postByJson(url, { themeName });
+        let url = LocalService.url("set-theme");
+        let r = await service.postByJson(url, { themeName });
+
+        LocalService.themeChanged.fire({ themeName });
+
         return r;
     }
+
+    /** 获取模板 */
+    private async getTheme(): Promise<string> {
+        let r = await service.getByJson<string>("get-theme");
+        return r;
+    }
+
+    static async getPages(): Promise<PageRecord[]> {
+        let url = LocalService.url("get-pages");
+        let pageRecords = await service.getByJson<PageRecord[]>(url);
+        return pageRecords;
+    }
+
+    static themeChanged = Callbacks<{ themeName: string }>();
+
+    static getPageTitle(pageName: string) {
+        if (!pageName) throw errors.argumentNull("pageName");
+
+        if (pageName.endsWith("home")) {
+            return "首页";
+        }
+        else if (pageName.endsWith("product-list")) {
+            return "商品列表";
+        }
+        else if (pageName.endsWith("product")) {
+            return "商品页"
+        }
+
+        return null;
+    }
+
 }
 
 export interface ComponentStationConfig {

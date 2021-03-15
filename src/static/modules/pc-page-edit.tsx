@@ -7,7 +7,6 @@ import { PageHelper } from "../controls/page-helper";
 import { DesignerContext, EditorPanel, EditorPanelProps, PageDesigner } from "maishu-jueying";
 import { ComponentPanel } from "../controls/component-panel";
 import { DesignPage } from "../controls/design-components/index";
-import "./pc-page-edit.less";
 import { getComponentRender } from "../component-renders/index";
 import { dataSources } from "../services";
 import { FormValidator, rules as r } from "maishu-dilu";
@@ -15,6 +14,8 @@ import * as ui from "maishu-ui-toolkit";
 import { ComponentInfo } from "../model";
 import { guid } from "maishu-toolkit";
 import { ComponentLoader } from "../controls/component-loader";
+
+import "./content/pc-page-edit.less";
 
 interface State {
     pageRecord?: PageRecord,
@@ -32,10 +33,10 @@ interface Props extends PageProps {
     data: { id?: string, name?: string },
 }
 
+let localService = new LocalService();
 export default class PCPageEdit extends React.Component<Props, State> {
     componentPanel: ComponentPanel;
     editorPanel: EditorPanel;
-    localService: LocalService;
     validator: FormValidator;
     pageDesigner: PageDesigner;
     // componentLoader: ComponentLoader;
@@ -47,22 +48,23 @@ export default class PCPageEdit extends React.Component<Props, State> {
             pageRecord: this.props.pageRecord, isReady: false,
         };
 
-        this.localService = this.props.app.createService(LocalService);
-        this.localService.componentStationConfig().then(c => {
+        localService.componentStationConfig().then(c => {
             let componentInfos = c.components;
-            console.assert(componentInfos != null);
-            componentInfos = componentInfos.filter(o => o.displayName != null);
-            this.setState({ componentInfos, groups: c.groups });
-            componentInfos.forEach(c => {
-                c.data = c.data || { id: guid(), type: c.type, props: {} };
-            })
-            this.componentPanel.setComponets(componentInfos.map(o => Object.assign(o, {
-                componentData: { type: o.type, props: {} } as ComponentData
-            })));
+            if (c.components != null) {
+                componentInfos = componentInfos.filter(o => o.displayName != null);
+                this.setState({ componentInfos, groups: c.groups });
+                componentInfos.forEach(c => {
+                    c.data = c.data || { id: guid(), type: c.type, props: {} };
+                })
+                this.componentPanel.setComponets(componentInfos.map(o => Object.assign(o, {
+                    componentData: { type: o.type, props: {} } as ComponentData
+                })));
+            }
+
             //==========================================================================================
         });
 
-        this.localService.templateList().then(r => {
+        localService.templateList().then(r => {
             this.setState({ templateList: r })
         });
     }
@@ -87,12 +89,12 @@ export default class PCPageEdit extends React.Component<Props, State> {
         let templateRecord: PageRecord;
         this.getPageRecord().then(async pageRecord => {
             if (pageRecord?.templateId) {
-                templateRecord = await this.localService.getPageRecord(pageRecord.templateId);
+                templateRecord = await localService.getPageRecord(pageRecord.templateId);
             }
 
             this.getPageRecord().then(async pageRecord => {
                 if (pageRecord?.templateId) {
-                    templateRecord = await this.localService.getPageRecord(pageRecord.templateId);
+                    templateRecord = await localService.getPageRecord(pageRecord.templateId);
                 }
                 this.setState({ isReady: true, pageRecord, templateRecord });
             })
@@ -100,7 +102,7 @@ export default class PCPageEdit extends React.Component<Props, State> {
     }
 
     private async getPageRecord() {
-        let s = this.localService;
+        let s = localService;
         let pageRecord: PageRecord;
         if (this.props.data.id) {
             pageRecord = await s.getPageRecord(this.props.data.id as string);
@@ -258,7 +260,7 @@ export default class PCPageEdit extends React.Component<Props, State> {
             this.setState({ templateRecord: null, pageRecord });
             return;
         }
-        this.localService.getPageRecord(templateId).then(r => {
+        localService.getPageRecord(templateId).then(r => {
             this.setState({ templateRecord: r });
         });
     }

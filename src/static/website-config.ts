@@ -5,7 +5,8 @@ let websiteConfig = {
     componentStationConfig: "config.js",
     // componentStationPath: "design",
     componentStations: {
-        design: ``
+        aixpi: `http://127.0.0.1:6739/aixpi`,
+        flone: `http://127.0.0.1:6739/flone`,
     },
     //===================================================
     requirejs: {

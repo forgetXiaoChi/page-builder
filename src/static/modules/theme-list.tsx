@@ -1,8 +1,6 @@
-import { pathConcat } from "maishu-toolkit";
 import { buttonOnClick } from "maishu-ui-toolkit";
 import * as  React from "react";
-import { ComponentStationConfig, LocalService } from "../services/local-service";
-import strings from "../strings";
+import { LocalService } from "../services/local-service";
 import websiteConfig from "../website-config";
 
 let localService = new LocalService();
@@ -11,7 +9,6 @@ interface Props {
 }
 
 interface State {
-    themes?: ComponentStationConfig["themes"]
 }
 
 export default class extends React.Component<Props, State> {
@@ -19,9 +16,6 @@ export default class extends React.Component<Props, State> {
         super(props);
 
         this.state = {};
-        localService.componentStationConfig().then(c => {
-            this.setState({ themes: c.themes });
-        })
     }
 
     selectTheme(name: string) {
@@ -29,27 +23,17 @@ export default class extends React.Component<Props, State> {
     }
 
     render() {
-
-        let { themes } = this.state;
-        if (themes === undefined) {
-            return <div className="empty">{strings.dataLoading}</div>
-        }
-
-
-        if (themes.length == 0) {
-            return <div className="empty">{strings.dataEmpty}</div>
-        }
-
+        let keys = Object.getOwnPropertyNames(websiteConfig.componentStations);
         return <div className="row">
-            {themes.map(o =>
-                <div key={o.path} className="col-md-3 text-center">
-                    <img src={pathConcat(websiteConfig.componentStations[o.name], o.image)} className="img-responsive"
+            {keys.map(o =>
+                <div key={o} className="col-md-3 text-center">
+                    <img src={`${o}/content/preview.png`} className="img-responsive"
                         style={{ border: "solid 1px #cccccc" }} />
 
                     <button className="btn btn-primary btn-block" style={{ marginTop: 20 }}
                         ref={e => {
                             if (!e) return;
-                            buttonOnClick(e, () => this.selectTheme(o.name));
+                            buttonOnClick(e, () => this.selectTheme(o));
                         }}>
                         <i className="glyphicon glyphicon-ok"></i>
                         <span>选择模板</span>

@@ -88,9 +88,7 @@ export class ComponentLoader {
         let executedCount = 0;
         for (let i = 0; i < this.typesToLoad.length; i++) {
             let type = this.typesToLoad[i];
-            // let componentType = componentTypes[type] as any;
-            // if (componentType == null) {
-            //     registerComponent(type, FakeComponent);
+
             loadComponentType(type, this.isDesignMode).then(c => {
                 registerComponent(type, c.componentType);
                 console.assert(c.componentInfo != null);
@@ -162,10 +160,6 @@ async function loadComponentType(typeName: string, isDesignMode: boolean) {
         })
 
     })
-
-    // await editorPromise;
-    // await layoutPromise;
-    // return componentPromise;
 
     return { componentType, componentInfo };
 }

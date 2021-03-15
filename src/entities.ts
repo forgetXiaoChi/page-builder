@@ -26,6 +26,9 @@ export class PageRecord {
 
     @Column({ name: "template_id", type: "varchar", length: 36, nullable: true })
     templateId?: string;
+
+    @Column({ name: "theme_name", type: "varchar", length: 40 })
+    themeName: string;
 }
 
 @Entity("data_object")

@@ -22,6 +22,7 @@ interface Props extends PageProps {
     data: { id?: string },
 }
 
+let localService = new LocalService();
 
 export default class PageEdit extends React.Component<Props, State> {
 
@@ -36,7 +37,6 @@ export default class PageEdit extends React.Component<Props, State> {
 
         //==========================================================================================
         // 设置组件工具栏
-        let localService = this.props.app.createService(LocalService);
         // this.loadLessFiles(localService);
 
         localService.componentInfos().then(componentInfos => {
@@ -46,15 +46,6 @@ export default class PageEdit extends React.Component<Props, State> {
             //==========================================================================================
         })
     }
-
-
-    // async loadLessFiles(localService: LocalService) {
-    //     let files = await localService.clientFiles();
-    //     let editorLessFiles = files.filter(o => o.startsWith("components") && o.endsWith("editor.less"));
-    //     editorLessFiles.forEach(path => {
-    //         Less.renderByRequireJS(path, {});
-    //     })
-    // }
 
     async save(): Promise<any> {
         let { pageName } = this.designView.state;
@@ -89,10 +80,9 @@ export default class PageEdit extends React.Component<Props, State> {
     }
 
     componentDidMount() {
-        let s = this.props.createService(LocalService);
         if (this.state.pageRecord == null) {
             if (this.props.data.id) {
-                s.getPageRecord(this.props.data.id as string).then(d => {
+                localService.getPageRecord(this.props.data.id as string).then(d => {
                     this.setState({ pageRecord: d })
                 })
             }
@@ -125,7 +115,7 @@ export default class PageEdit extends React.Component<Props, State> {
             </div>
         return <DesignView {...{
             pageData: pageRecord.pageData, pageName: pageRecord.name, componentInfos,
-            customRender: this.props.customRender
+            customRender: this.props.customRender, themeName: pageRecord.themeName,
         }}
             ref={e => this.designView = e || this.designView}
             toolbarButtons={[

@@ -88,7 +88,6 @@ export class PageDataController {
         return r;
     }
 
-
     @action("template-list")
     templateList(@connection conn: Connection) {
         if (!conn) throw errors.argumentNull("conn");

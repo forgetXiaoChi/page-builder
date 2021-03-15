@@ -3,7 +3,7 @@
 
     let node_modules = "../node_modules";
     let lib = "lib";
-    requirejs.config({
+    let req = requirejs.config({
         shim: {
             fetch: {
                 exports: 'fetch'
@@ -57,7 +57,8 @@
     });
 
     requirejs(["application"], function (mod: any) {
-        mod.app.run();
+        let app = mod.run({}, req);
+        app.run();
     })
 
 })();

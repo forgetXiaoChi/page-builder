@@ -1,4 +1,4 @@
-import { createParameterDecorator, ServerContext, VirtualDirectory } from "maishu-node-mvc";
+import { createParameterDecorator, VirtualDirectory } from "maishu-node-mvc";
 import { getConnectionManager, createConnection, getConnection, Connection } from "maishu-node-data";
 import { ConnectionOptions } from "maishu-node-data";
 // import { db } from "./nws-config";
