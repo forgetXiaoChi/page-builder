@@ -1,3 +1,5 @@
+import { WebsiteConfig } from "maishu-admin-scaffold/static/website-config";
+
 export let libVirtualPath = "lib";
 let websiteConfig = {
     //===================================================
@@ -39,13 +41,13 @@ let websiteConfig = {
     },
     menuItems: [
         {
-            id: "AE3789A2-0CF0-4D81-A7C0-E2C9324A1DDD", name: "页面列表", path: "#page-list",
+            id: "AE3789A2-0CF0-4D81-A7C0-E2C9324A1DDD", name: "页面列表", path: "#page-list", sortNumber: 10,
             children: [
                 { id: "3CE34AB9-7814-4FE5-85E2-ABA6AAF9C1FD", name: "页面编辑", path: "#page-edit", hidden: true }
             ]
         },
         {
-            id: "7B13EC50-A398-4379-AED5-6AB3263EDB75", name: "主题", path: "#theme-list",
+            id: "7B13EC50-A398-4379-AED5-6AB3263EDB75", name: "主题", path: "#theme-list", sortNumber: 20,
         }
     ]
 };

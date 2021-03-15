@@ -20,7 +20,7 @@ function updateMenuItems(app: Application) {
         let menuItems = app.mainMaster.state.menuItems;
         menuItems = menuItems.filter(o => pageMenuItems.map(c => c.id).indexOf(o.id) < 0);
 
-        pageMenuItems = r.map(o => toMenuItem(o)).filter(o => o != null);
+        pageMenuItems = r.map(o => toMenuItem(o)).filter(o => o != null).sort((a, b) => a.sortNumber > b.sortNumber ? 1 : -1);
 
         console.assert(menuItems != null);
         menuItems.push(...pageMenuItems);
