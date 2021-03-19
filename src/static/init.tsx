@@ -6,7 +6,6 @@ import { LocalService } from "./services";
 type MenuItem = Application["mainMaster"]["menuItems"][0];
 
 export default function (app: Application) {
-
     updateMenuItems(app);
     LocalService.themeChanged.add(args => {
         updateMenuItems(app);

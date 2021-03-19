@@ -1,4 +1,3 @@
-import { WebsiteConfig } from "maishu-admin-scaffold/static/website-config";
 
 export let libVirtualPath = "lib";
 let websiteConfig = {
@@ -8,6 +7,7 @@ let websiteConfig = {
         aixpi: `http://127.0.0.1:6739/aixpi`,
         flone: `http://127.0.0.1:6739/flone`,
     },
+    componentShare: "http://127.0.0.1:6739/share",
     //===================================================
     requirejs: {
         paths: {

@@ -2,7 +2,7 @@ import * as React from "react";
 import { PageProps } from "maishu-chitu-react";
 import { PageRecord } from "../../entities";
 import { LocalService } from "../services";
-import { ComponentData, PageData } from "maishu-jueying-core";
+import { ComponentData, PageData, PageHeader } from "maishu-jueying-core";
 import { PageHelper } from "../controls/page-helper";
 import { DesignerContext, EditorPanel, EditorPanelProps, PageDesigner } from "maishu-jueying";
 import { ComponentPanel } from "../controls/component-panel";
@@ -48,7 +48,7 @@ export default class PCPageEdit extends React.Component<Props, State> {
             pageRecord: this.props.pageRecord, isReady: false,
         };
 
-        localService.componentStationConfig().then(c => {
+        localService.componentStationConfig("designtime").then(c => {
             let componentInfos = c.components;
             if (c.components != null) {
                 componentInfos = componentInfos.filter(o => o.displayName != null);
@@ -129,6 +129,15 @@ export default class PCPageEdit extends React.Component<Props, State> {
         if (template) {
             PageHelper.mergeTemplate(pageData, template);
         }
+
+        //=====================================================
+        // 调整 header，使得 header 在前面
+        let header = PageHelper.findHeader(pageData, false);
+        if (header != null) {
+            pageData.children = pageData.children.filter(o => o.id != PageHeader.id);
+            pageData.children.unshift(header);
+        }
+        //=====================================================
 
         return <DesignPage pageData={pageData} componentPanel={componentPanel}
             ref={e => {

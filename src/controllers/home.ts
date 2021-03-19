@@ -1,15 +1,13 @@
 import { action, contextData, routeData } from "maishu-node-mvc";
 import { ContentResult, controller, ServerContext, serverContext } from "maishu-nws-mvc";
 import { connection, currentAppId } from "../decoders";
-import { Connection, Like } from "maishu-node-data";
+import { Connection, } from "maishu-node-data";
 import { errors } from "../static/errors";
 import { PageRecord, StoreInfo } from "../entities";
 import { renderToString } from "react-dom/server";
 
 import websiteConfig from "../static/website-config";
 import * as React from "react";
-
-import { Preview } from "../static/preview-page";
 import * as path from "path";
 
 type WebsiteConfig = typeof websiteConfig;
@@ -74,8 +72,9 @@ export class HomeController {
         return storeInfo;
     }
 
+    /** 处理 html 请求 */
     @action("*.html")
-    async temp(@serverContext ctx: ServerContext) {
+    async html(@serverContext ctx: ServerContext) {
 
 
         let modulePath = ctx.virtualPath.substr(0, ctx.virtualPath.length - ".html".length);

@@ -35,8 +35,11 @@ export function start(settings: Settings) {
     proxy["^/ueditor/net/upload/(\\S*)"] = `http://${imageHost}/Images/upload/$1`;
     let componentStations = websiteConfig.componentStations || {};
     for (let c in componentStations) {
-        proxy[`/${c}/(\\S*)`] = `${componentStations[c]}/$1`;
+        proxy[`^/${c}/(\\S*)`] = `${componentStations[c]}/$1`;
     }
+    // share: `http://127.0.0.1:6739/share`
+    proxy[`^/share/(\\S*)`] = websiteConfig.componentShare;
+
 
     let mvcSettings: MVCSettings = {
         port,
@@ -46,7 +49,7 @@ export function start(settings: Settings) {
         proxy,
     }
 
-    startServer(mvcSettings, "mvc");
+    let server = startServer(mvcSettings, "mvc");
 }
 
 

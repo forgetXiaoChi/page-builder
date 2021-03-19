@@ -65,8 +65,13 @@
     }
 
     .page-view {
-        width : calc(100% - 460px);
-        height: unset;
+        width   : calc(100% - 320px);
+        height  : unset;
+        position: unset;
+
+        .header {
+            position: unset;
+        }
 
         .footer {
             position: unset;
@@ -112,4 +117,10 @@ button.btn {
 
 .btn button {
     width: unset;
+}
+
+#main-master {
+    .main {
+        width: calc(100% - 110px);
+    }
 }

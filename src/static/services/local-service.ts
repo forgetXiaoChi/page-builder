@@ -58,18 +58,18 @@ export class LocalService {
         return r;
     }
 
-    async componentInfos() {
-        let config = await this.componentStationConfig();
+    async componentInfos(times: "designtime" | "runtime") {
+        let config = await this.componentStationConfig(times);
         return config.components;
     }
 
     async componentGroups() {
-        let config = await this.componentStationConfig();
+        let config = await this.componentStationConfig("designtime");
         return config.groups;
     }
 
     private _componentStationConfig: ComponentStationConfig;
-    async componentStationConfig(): Promise<ComponentStationConfig> {
+    async componentStationConfig(times: "designtime" | "runtime"): Promise<ComponentStationConfig> {
         let themenName = await this.getTheme();
         let componentStationPath = websiteConfig.componentStations[themenName];
         if (this._componentStationConfig != null)
@@ -82,8 +82,12 @@ export class LocalService {
         if (_componentInfos["pathContacted"] == undefined) {
             _componentInfos["pathContacted"] = true;
             _componentInfos.forEach(o => {
-                if (o.path != null)
+                if (o.path != null) {
                     o.path = pathConcat(themenName, o.path);
+                    if (times == "designtime") {
+                        o.path = o.path + ".des";
+                    }
+                }
 
                 if (o.editor != null)
                     o.editor = pathConcat(themenName, o.editor);

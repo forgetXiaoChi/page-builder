@@ -39,7 +39,7 @@ export default class PageEdit extends React.Component<Props, State> {
         // 设置组件工具栏
         // this.loadLessFiles(localService);
 
-        localService.componentInfos().then(componentInfos => {
+        localService.componentInfos("designtime").then(componentInfos => {
             console.assert(componentInfos != null);
             componentInfos = componentInfos.filter(o => o.displayName != null);
             this.setState({ componentInfos });

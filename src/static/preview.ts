@@ -1,5 +1,5 @@
 let node_modules = "node_modules";
-requirejs.config({
+let req = requirejs.config({
     shim: {
         fetch: {
             exports: 'fetch'
@@ -17,7 +17,9 @@ requirejs.config({
     },
     baseUrl: './',
     paths: {
+        css: `${node_modules}/maishu-requirejs-plugins/src/css`,
         json: `${node_modules}/maishu-requirejs-plugins/src/json`,
+        text: `${node_modules}/maishu-requirejs-plugins/lib/text`,
         "lessjs": `${node_modules}/less/dist/less`,
         "jquery": `${node_modules}/jquery/dist/jquery.min`,
         "js-md5": `${node_modules}/js-md5/src/md5`,
@@ -26,6 +28,7 @@ requirejs.config({
         "maishu-wuzhui": `${node_modules}/maishu-wuzhui/dist/index`,
         'maishu-chitu': `${node_modules}/maishu-chitu/dist/index`,
         "maishu-dilu": `${node_modules}/maishu-dilu/dist/index`,
+        "maishu-dilu-react": `${node_modules}/maishu-dilu-react/dist/index`,
         "maishu-chitu-react": `${node_modules}/maishu-chitu-react/dist/index`,
         "maishu-wuzhui-helper": `${node_modules}/maishu-wuzhui-helper/dist/index`,
         "maishu-chitu-service": `${node_modules}/maishu-chitu-service/dist/index`,
@@ -33,10 +36,16 @@ requirejs.config({
         "maishu-toolkit": `${node_modules}/maishu-toolkit/dist/index`,
         "maishu-ui-toolkit": `${node_modules}/maishu-ui-toolkit/dist/index`,
         "maishu-services-sdk": `${node_modules}/maishu-services-sdk/dist/index`,
+        "maishu-jueying-core": `${node_modules}/maishu-jueying-core/dist/index`,
         "maishu-chitu-admin/static": `${node_modules}/maishu-chitu-admin/dist/index`,
-        "modules": "mobile/modules",
+        "modules": "preview/modules",
         "common/static": "/common/static",
         "maishu-chitu-admin": `${node_modules}/maishu-chitu-admin`
 
     }
 });
+
+requirejs(["preview/application"], function (mod: any) {
+    let app = mod.run({}, req);
+    app.run();
+})
