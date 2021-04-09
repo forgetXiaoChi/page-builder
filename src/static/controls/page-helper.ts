@@ -125,5 +125,5 @@ export class PageHelper {
 type Omit<T, K> = Pick<T, Exclude<keyof T, K>>
 
 type BodyComponentData = Omit<ComponentData, "props"> & { props: PageBodyProps };
-type HeaderComponentData = Omit<ComponentData, "props"> & { props: PageHeaderProps };
-type FooterComponentData = Omit<ComponentData, "props"> & { props: PageFooterProps };
+export type HeaderComponentData = Omit<ComponentData, "props"> & { props: PageHeaderProps };
+export type FooterComponentData = Omit<ComponentData, "props"> & { props: PageFooterProps };

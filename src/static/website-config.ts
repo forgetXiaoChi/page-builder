@@ -61,6 +61,7 @@ let websiteConfig: MyWebsiteConfig = {
         }
     ],
     routers: {
+        "/preview/index": { html: "preview.html", pageName: "page", id: "5d467fc7-868c-d42c-8942-aaed57f6efc9" },
         "/index": { html: "preview.html", pageName: "page", id: "5d467fc7-868c-d42c-8942-aaed57f6efc9" },
         "/product/:productId": { html: "preview.html", pageName: "page", id: "6a9f7e44-5554-baf3-31f9-9823387342c7", }
     },

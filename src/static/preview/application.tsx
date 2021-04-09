@@ -3,6 +3,9 @@ import { Application } from "maishu-chitu-react";
 import { pathConcat } from "maishu-toolkit";
 import * as UrlPattern from "url-pattern";
 import w from "../website-config";
+import { LocalService } from "../services";
+import { FooterComponentData, HeaderComponentData, PageHelper } from "../controls/page-helper";
+import { PageData, PageFooter, PageHeader } from "maishu-jueying-core";
 
 type WebsiteConfig = typeof w;
 
@@ -14,6 +17,17 @@ class MyApplication extends Application {
         super(config);
 
         this.req = req;
+        this.pageCreated.add((app, page) => {
+            console.log(page.data.id);
+
+            let s = new LocalService();
+            s.getPageRecord(page.data.id).then(r => {
+                let header = PageHelper.findHeader(r.pageData);
+                let footer = PageHelper.findFooter(r.pageData);
+                let elementId = "_" + (r.pageData as PageData).id.split("-").join("");
+                createStyleElement(elementId, header, footer);
+            })
+        })
     }
 
     private siteRequireJS = {};
@@ -109,7 +123,28 @@ class MyApplication extends Application {
 
         return super.parseUrl(url);
     }
+}
 
+function createStyleElement(elementId: string, header: HeaderComponentData, footer: FooterComponentData) {
+    if (!document.getElementById(elementId) && document.head != null) {
+        let element = document.createElement('style');
+        element.type = 'text/css';
+        element.id = elementId;
+        document.head.appendChild(element);
+        if (header?.props?.height) {
+            element.innerHTML = element.innerHTML + `
+    #${elementId} .body {
+        padding-top: ${header?.props?.height ? header.props.height + "px" : 'unset'}
+    }`
+        }
+
+        if (footer?.props?.height) {
+            element.innerHTML = element.innerHTML + `
+    #${elementId} .body {
+        padding-bottom: ${footer?.props?.height ? footer.props.height + "px" : 'unset'}
+    }`
+        }
+    }
 
 }
 

@@ -1,4 +1,4 @@
-import { controller, action, routeData } from "maishu-node-mvc";
+import { controller, action, routeData, ContentResult } from "maishu-node-mvc";
 import { Connection, DataHelper, SelectArguments } from "maishu-node-data";
 import { PageRecord } from "../entities";
 import { errors } from "../static/errors";
@@ -95,6 +95,18 @@ export class PageDataController {
         let pageRecords = conn.getRepository(PageRecord).find({ select: ["id", "name"], where: { type: "template" } });
         return pageRecords;
 
+    }
+
+    @action("css/:pageId")
+    async pageStye(@connection conn: Connection, @routeData d: { pageId: string }) {
+        let r = new ContentResult("", { "content-type": "text/css" });
+        let t = conn.getRepository(PageRecord);
+        let p = await t.findOne(d.pageId);
+        if (!p) throw errors.pageRecordNotExists(d.pageId);
+
+
+
+        return r;
     }
 
 

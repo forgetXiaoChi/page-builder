@@ -37,6 +37,10 @@ export class LocalService {
             throw new Error("Context of website config is empty.");
 
         let context = contexts[contextName];
+        if (!context) {
+            console.assert(websiteConfig.requirejs != null);
+            requirejs.config(websiteConfig.requirejs);
+        }
         return context;
     }
 

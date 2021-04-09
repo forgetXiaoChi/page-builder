@@ -44,7 +44,7 @@ export function start(settings: Settings) {
     }
     // share: `http://127.0.0.1:6739/share`
     proxy[`^/share/(\\S*)`] = `${websiteConfig.componentShare}/$1`;
-
+    // proxy["/\\S+/aixpi/(\\S*)"] = `/aixpi/(\\S*)`;
 
     let mvcSettings: MVCSettings = {
         port,
@@ -52,6 +52,10 @@ export function start(settings: Settings) {
         websiteDirectory: __dirname,
         virtualPaths,
         proxy,
+        pathRewrite: {
+            "^/product/[0-9a-fA-F]{8}": "preview.html",
+            "^/product/(\\S+)": "/$1",
+        }
     }
 
     let server = startServer(mvcSettings, "mvc");
