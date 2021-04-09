@@ -1,6 +1,13 @@
 
+import { WebsiteConfig } from "maishu-admin-scaffold/static/website-config";
+
+type MyWebsiteConfig = WebsiteConfig & {
+    componentStations: { aixpi: string, flone: string },
+    componentShare: string,
+};
+
 export let libVirtualPath = "lib";
-let websiteConfig = {
+let websiteConfig: MyWebsiteConfig = {
     //===================================================
     // 组件站点配置
     componentStations: {
@@ -10,6 +17,7 @@ let websiteConfig = {
     componentShare: "http://127.0.0.1:6739/share",
     //===================================================
     requirejs: {
+        context: "page-builder",
         paths: {
             "css": "node_modules/maishu-requirejs-plugins/src/css",
             "json": "node_modules/maishu-requirejs-plugins/src/json",
@@ -34,6 +42,8 @@ let websiteConfig = {
             "jquery": "node_modules/jquery/dist/jquery",
             "jquery-ui": `content/jquery-ui-1.12.1/jquery-ui`,
             "js-md5": "node_modules/js-md5/build/md5.min",
+
+            "url-pattern": "node_modules/url-pattern/lib/url-pattern"
         }
     },
     containers: {
@@ -49,6 +59,11 @@ let websiteConfig = {
         {
             id: "7B13EC50-A398-4379-AED5-6AB3263EDB75", name: "主题", path: "#theme-list", sortNumber: 20,
         }
-    ]
+    ],
+    routers: {
+        "/index": { html: "preview.html", pageName: "page", id: "5d467fc7-868c-d42c-8942-aaed57f6efc9" },
+        "/product/:productId": { html: "preview.html", pageName: "page", id: "6a9f7e44-5554-baf3-31f9-9823387342c7", }
+    },
+    mode: "production",
 };
 export default websiteConfig;

@@ -15,19 +15,29 @@ export class LocalService {
     constructor() {
     }
 
-    static url(path: string): string {
-        let sitePath: string | null = null;
-        let pageUrl = location.hash.substr(1);
-        if (pageUrl.startsWith("/")) {
-            pageUrl = pageUrl.substr(1);
-            sitePath = pageUrl.split("/")[0];
-        }
+    static url(path: string) {
+        let contexts = requirejs.exec("contexts");
+        let contextName = websiteConfig.requirejs?.context || "";
+        if (!contextName)
+            throw new Error("Context of website config is empty.");
 
-        if (sitePath) {
-            path = pathConcat(sitePath, path);
-        }
+        let context = contexts[contextName];
+        let baseUrl = context?.config?.baseUrl;
+        if (!baseUrl)
+            return path;
 
-        return path;
+        let r = pathConcat(baseUrl, path);
+        return r;
+    }
+
+    static getContext(): RequirejsContext {
+        let contexts = requirejs.exec("contexts");
+        let contextName = websiteConfig.requirejs?.context || "";
+        if (!contextName)
+            throw new Error("Context of website config is empty.");
+
+        let context = contexts[contextName];
+        return context;
     }
 
     pageRecordList(args: DataSourceSelectArguments) {
@@ -112,8 +122,9 @@ export class LocalService {
     }
 
     async loadJS<T>(jsPath: string): Promise<T> {
+        let context = LocalService.getContext();
         return new Promise((resolve, reject) => {
-            requirejs([jsPath], (mod: any) => {
+            context.require([jsPath], (mod: any) => {
                 resolve(mod.default || mod)
             }, (err: any) => {
                 reject(err)
@@ -133,7 +144,8 @@ export class LocalService {
 
     /** 获取模板 */
     private async getTheme(): Promise<string> {
-        let r = await service.getByJson<string>("get-theme");
+        let url = LocalService.url("get-theme");
+        let r = await service.getByJson<string>(url);
         return r;
     }
 

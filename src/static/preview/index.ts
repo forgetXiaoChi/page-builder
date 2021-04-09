@@ -40,6 +40,7 @@
             "maishu-ui-toolkit": `${node_modules}/maishu-ui-toolkit/dist/index`,
             "maishu-services-sdk": `${node_modules}/maishu-services-sdk/dist/index`,
             "maishu-jueying-core": `${node_modules}/maishu-jueying-core/dist/index`,
+            "url-pattern": `${node_modules}/url-pattern/lib/url-pattern`,
             "taro-builder-core": `${node_modules}/taro-builder-core/dist/index.min`,
             "taro-ui/dist": "node_modules/taro-ui/dist",
 

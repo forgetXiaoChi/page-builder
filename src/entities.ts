@@ -1,4 +1,3 @@
-import { expr } from "jquery";
 import { Entity, Column, PrimaryColumn } from "maishu-node-data";
 
 @Entity("page_data_record")

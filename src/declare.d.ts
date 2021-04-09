@@ -14,3 +14,13 @@ declare module "json!menu-items" {
     let r: MenuItem[];
     export = r;
 }
+
+declare interface RequirejsContext {
+    require(modules: string[],
+        success: (args: object[]) => void,
+        fail?: (err: any) => void,
+    );
+
+    require(module: string): any;
+
+}

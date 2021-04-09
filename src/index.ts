@@ -3,6 +3,7 @@ import { startServer, Settings as MVCSettings } from "maishu-node-mvc";
 import { getVirtualPaths } from "maishu-admin-scaffold";
 import { ConnectionOptions, createConnection } from "maishu-node-data";
 import websiteConfig from "./static/website-config";
+import { sourceVirtualPaths } from "maishu-chitu-scaffold";
 
 interface Settings {
     port: number,
@@ -24,6 +25,10 @@ export function start(settings: Settings) {
     };
 
     let virtualPaths = getVirtualPaths("/static", path.join(__dirname, "../src/static"));
+
+    let sv = sourceVirtualPaths(__dirname);
+    virtualPaths = Object.assign(sv, virtualPaths);
+
     virtualPaths["/static/node_modules"] = path.join(__dirname, "../node_modules");
     virtualPaths["/static/content"] = path.join(__dirname, "../content");
     virtualPaths["/static/modules/content"] = path.join(__dirname, "../content/modules");
@@ -38,7 +43,7 @@ export function start(settings: Settings) {
         proxy[`^/${c}/(\\S*)`] = `${componentStations[c]}/$1`;
     }
     // share: `http://127.0.0.1:6739/share`
-    proxy[`^/share/(\\S*)`] = websiteConfig.componentShare;
+    proxy[`^/share/(\\S*)`] = `${websiteConfig.componentShare}/$1`;
 
 
     let mvcSettings: MVCSettings = {

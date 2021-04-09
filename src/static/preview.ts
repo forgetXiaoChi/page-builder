@@ -40,7 +40,8 @@ let req = requirejs.config({
         "maishu-chitu-admin/static": `${node_modules}/maishu-chitu-admin/dist/index`,
         "modules": "preview/modules",
         "common/static": "/common/static",
-        "maishu-chitu-admin": `${node_modules}/maishu-chitu-admin`
+        "maishu-chitu-admin": `${node_modules}/maishu-chitu-admin`,
+        "url-pattern": `${node_modules}/url-pattern/lib/url-pattern`
 
     }
 });
