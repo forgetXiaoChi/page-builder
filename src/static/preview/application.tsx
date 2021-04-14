@@ -1,14 +1,14 @@
 
 import { Application } from "maishu-chitu-react";
 import { pathConcat } from "maishu-toolkit";
-import * as UrlPattern from "url-pattern";
 import w from "../website-config";
 import { LocalService } from "../services";
 import { FooterComponentData, HeaderComponentData, PageHelper } from "../controls/page-helper";
-import { PageData, PageFooter, PageHeader } from "maishu-jueying-core";
+import { PageData } from "maishu-jueying-core";
 
 type WebsiteConfig = typeof w;
 
+// location.href = "http://192.168.2.195:5217/7bbfa36c-8115-47ad-8d47-9e52b58e7efd/6a9f7e44-5554-baf3-31f9-9823387342c7/0964cb3b-1cd4-4894-830e-1b154b8bbf05";
 class MyApplication extends Application {
 
     private req: Function;
@@ -21,12 +21,13 @@ class MyApplication extends Application {
             console.log(page.data.id);
 
             let s = new LocalService();
-            s.getPageRecord(page.data.id).then(r => {
-                let header = PageHelper.findHeader(r.pageData);
-                let footer = PageHelper.findFooter(r.pageData);
-                let elementId = "_" + (r.pageData as PageData).id.split("-").join("");
-                createStyleElement(elementId, header, footer);
-            })
+            if (page.data.id)
+                s.getPageRecord(page.data.id).then(r => {
+                    let header = PageHelper.findHeader(r.pageData);
+                    let footer = PageHelper.findFooter(r.pageData);
+                    let elementId = "_" + (r.pageData as PageData).id.split("-").join("");
+                    createStyleElement(elementId, header, footer);
+                })
         })
     }
 
@@ -73,7 +74,7 @@ class MyApplication extends Application {
     private getWebsiteConfig(sitePath: string) {
         return new Promise<WebsiteConfig>((resolve, reject) => {
             let websiteConfigPath = pathConcat(sitePath, "website-config.js");
-            requirejs([websiteConfigPath], mod => {
+            this.req([websiteConfigPath], mod => {
                 resolve(mod.default || mod);
             }, err => {
                 reject(err);
@@ -91,38 +92,50 @@ class MyApplication extends Application {
         return req;
     }
 
-    parseUrl(url: string) {
-        let pathname: string;
-        if (url.startsWith("http")) {
-            let a = document.createElement("a");
-            a.href = url;
-            pathname = a.pathname;
-        }
-        else {
-            pathname = url;
-        }
+    // parseUrl(url: string) {
+    //     let pathname: string;
+    //     if (url.startsWith("http")) {
+    //         let a = document.createElement("a");
+    //         a.href = url;
+    //         pathname = a.pathname;
+    //     }
+    //     else {
+    //         pathname = url;
+    //     }
 
-        if (pathname[0] != "/")
-            pathname = "/" + pathname;
+    //     if (pathname[0] != "/")
+    //         pathname = "/" + pathname;
 
-        let keys = Object.keys(w.routers);
-        for (let i = 0; i < keys.length; i++) {
-            let p = new UrlPattern(keys[i]);
-            let m = p.match(pathname);
-            if (m) {
-                m = Object.assign(m, w.routers[keys[i]]);
-                if (!m.pageName)
-                    throw new Error("Router parse result is not contains pageName.");
+    //     let keys = Object.keys(w.routers);
+    //     for (let i = 0; i < keys.length; i++) {
+    //         let p = new UrlPattern(keys[i]);
+    //         let m = p.match(pathname);
+    //         if (m) {
+    //             m = Object.assign(m, w.routers[keys[i]]);
+    //             if (!m.pageName)
+    //                 throw new Error("Router parse result is not contains pageName.");
 
-                let pageName = Array.isArray(m.pageName) ? (m.pageName as string[]).join("/") : m.pageName;
-                delete m.pageName;
-                return { pageName, values: m };
-            }
-        }
+    //             let pageName = Array.isArray(m.pageName) ? (m.pageName as string[]).join("/") : m.pageName;
+    //             delete m.pageName;
+
+    //             if (m.appId) {
+    //                 Service.headers["application-id"] = m.appId;
+    //             }
+
+    //             return { pageName, values: m };
+    //         }
+    //     }
 
 
-        return super.parseUrl(url);
-    }
+
+    //     return super.parseUrl(url);
+    // }
+
+    // run() {
+    //     let url = window["actualUrl"] || location.href;
+    //     this.showPage(url);
+    // }
+
 }
 
 function createStyleElement(elementId: string, header: HeaderComponentData, footer: FooterComponentData) {

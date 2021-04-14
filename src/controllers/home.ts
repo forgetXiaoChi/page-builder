@@ -1,14 +1,11 @@
 import { action, contextData, routeData } from "maishu-node-mvc";
-import { ContentResult, controller, ServerContext, serverContext } from "maishu-nws-mvc";
+import { controller } from "maishu-nws-mvc";
 import { connection, currentAppId } from "../decoders";
 import { Connection, } from "maishu-node-data";
 import { errors } from "../static/errors";
 import { PageRecord, StoreInfo } from "../entities";
-import { renderToString } from "react-dom/server";
 
 import websiteConfig from "../static/website-config";
-import * as React from "react";
-import * as path from "path";
 
 type WebsiteConfig = typeof websiteConfig;
 
@@ -41,7 +38,7 @@ export class HomeController {
     }
 
     @action("/get-theme")
-    async getTheme(@currentAppId appId: string, @connection conn: Connection) {
+    async getTheme(@currentAppId appId: string, @connection conn: Connection, @routeData d?: { appId?: string }) {
         if (!appId) throw errors.argumentNull("appId");
 
         let storeInfo = await this.getStoreInfo(appId, conn);
@@ -72,25 +69,25 @@ export class HomeController {
         return storeInfo;
     }
 
-    /** 处理 html 请求 */
-    @action("*.html")
-    async html(@serverContext ctx: ServerContext) {
+    // /** 处理 html 请求 */
+    // @action("*.html")
+    // async html(@serverContext ctx: ServerContext) {
 
 
-        let modulePath = ctx.virtualPath.substr(0, ctx.virtualPath.length - ".html".length);
-        modulePath = path.join("../pages", modulePath);
+    //     let modulePath = ctx.virtualPath.substr(0, ctx.virtualPath.length - ".html".length);
+    //     modulePath = path.join("../pages", modulePath);
 
-        let mod = require(modulePath);
-        if (mod == null)
-            throw errors.loadModuleFail(modulePath);
+    //     let mod = require(modulePath);
+    //     if (mod == null)
+    //         throw errors.loadModuleFail(modulePath);
 
-        if (mod.default == null) {
-            throw errors.moduleNotExport(modulePath, "default");
-        }
+    //     if (mod.default == null) {
+    //         throw errors.moduleNotExport(modulePath, "default");
+    //     }
 
-        let element = React.createElement(mod.default, {});
-        let r = renderToString(element);
-        return new ContentResult(r, { "content-type": "text/html" });
-    }
+    //     let element = React.createElement(mod.default, {});
+    //     let r = renderToString(element);
+    //     return new ContentResult(r, { "content-type": "text/html" });
+    // }
 
 }

@@ -17,7 +17,7 @@ export default class Preview extends React.Component {
             </head>
 
             <body className="preview">
-                <script data-main="preview" src="node_modules/requirejs/require.js"></script>
+                <script data-main="preview" src="/node_modules/requirejs/require.js"></script>
 
             </body>
         </html>

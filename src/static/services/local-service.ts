@@ -6,7 +6,7 @@ import { ComponentInfo } from "../model";
 import websiteConfig from "../website-config";
 import { errorHandle } from "../error-handle";
 
-Service.headers["application-id"] = "7bbfa36c-8115-47ad-8d47-9e52b58e7efd";
+Service.headers["application-id"] = window["applicationId"];
 
 let service = new Service(err => errorHandle(err));
 
@@ -23,10 +23,12 @@ export class LocalService {
 
         let context = contexts[contextName];
         let baseUrl = context?.config?.baseUrl;
+        let r: string;
         if (!baseUrl)
-            return path;
+            r = path;
+        else
+            r = pathConcat(baseUrl, path);
 
-        let r = pathConcat(baseUrl, path);
         return r;
     }
 
@@ -40,6 +42,14 @@ export class LocalService {
         if (!context) {
             console.assert(websiteConfig.requirejs != null);
             requirejs.config(websiteConfig.requirejs);
+        }
+
+        let load: (id: string, url: string) => void = context.load;
+        context.load = function (id: string, url: string) {
+            if (url[0] == "/" && !url.endsWith(".js"))
+                url = url + ".js";
+
+            load.apply(this, [id, url]);
         }
         return context;
     }
@@ -63,11 +73,14 @@ export class LocalService {
         return item;
     }
     async getPageRecord(id: string): Promise<PageRecord> {
+        if (!id) throw errors.argumentNull("id");
+
         let r = await service.getByJson<PageRecord>(LocalService.url("page-data/item"), { id });
         return r;
     }
 
     async getPageDataByName(name: string): Promise<PageRecord> {
+        if (!name) throw errors.argumentNull("name");
         let r = await service.getByJson<PageRecord>(LocalService.url("page-data/item"), { name });
         return r;
     }

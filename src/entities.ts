@@ -1,4 +1,4 @@
-import { Entity, Column, PrimaryColumn } from "maishu-node-data";
+import { Entity, Column, PrimaryColumn, Connection } from "maishu-node-data";
 
 @Entity("page_data_record")
 export class PageRecord {
@@ -28,6 +28,9 @@ export class PageRecord {
 
     @Column({ name: "theme_name", type: "varchar", length: 40 })
     themeName: string;
+
+    @Column({ type: "varchar", length: 100, nullable: true })
+    remark: string;
 }
 
 @Entity("data_object")
@@ -53,4 +56,16 @@ export class StoreInfo {
 
     @Column({ type: "varchar", length: 50 })
     theme: string;
+}
+
+@Entity("store_domain")
+export class StoreDomain {
+    @PrimaryColumn({ type: "char", length: 36 })
+    id: string
+
+    @Column({ type: "char", length: 36 })
+    applicationId: string
+
+    @Column({ type: "varchar", length: 100 })
+    domain: string
 }

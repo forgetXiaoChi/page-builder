@@ -27,18 +27,15 @@ function loadApplication(config) {
     config.requirejs.paths = Object.assign(config.requirejs.paths || {}, requirejsConfig.paths);
 
     let req = requirejs.config(config.requirejs || {});
-    req(["react"], function (React: any) {
-        window["h"] = React.createElement;
-        req(["application", "init"], (mod, initModule) => {
-            let app = mod.run(config, req);
-            let func = initModule.default || initModule;
-            if (typeof func != "function") {
-                console.log("Export of init module is not a function.");
-            }
-            else {
-                func(app);
-                app.run();
-            }
-        });
-    })
+    req(["application", "init"], (mod, initModule) => {
+        let app = mod.run(config, req);
+        let func = initModule.default || initModule;
+        if (typeof func != "function") {
+            console.log("Export of init module is not a function.");
+        }
+        else {
+            func(app);
+            app.run();
+        }
+    });
 }

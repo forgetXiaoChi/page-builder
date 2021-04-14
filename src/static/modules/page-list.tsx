@@ -11,6 +11,7 @@ export default class PageListPage extends React.Component {
             dataSource: dataSources.pageRecords,
             columns: [
                 boundField<PageRecord>({ dataField: "name", headerText: "名称" }),
+                boundField<PageRecord>({ dataField: "remark", headerText: "备注" }),
                 dateTimeField<PageRecord>({ dataField: "createDateTime", headerText: "创建时间" }),
                 customDataField<PageRecord>({
                     headerText: "操作",

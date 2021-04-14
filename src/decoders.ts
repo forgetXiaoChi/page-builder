@@ -1,7 +1,6 @@
 import { createParameterDecorator, VirtualDirectory } from "maishu-node-mvc";
 import { getConnectionManager, createConnection, getConnection, Connection } from "maishu-node-data";
 import { ConnectionOptions } from "maishu-node-data";
-// import { db } from "./nws-config";
 
 let db: ConnectionOptions = {
     type: "mysql", username: "root", password: "81263", name: "taro-builder",
@@ -17,12 +16,17 @@ export type ServerContextData = {
 }
 export let currentAppId = createParameterDecorator(async (context, routeData) => {
     let name = "application-id";
+    // let u = new URL(context.)
     let appId = context.req.headers[name] || routeData[name];
     return appId;
 });
 
 export let connection = createParameterDecorator(() => {
-    return new Promise(async (resolve, reject) => {
+    return getMyConnection();
+});
+
+export function getMyConnection() {
+    return new Promise<Connection>(async (resolve, reject) => {
         let connectionManager = getConnectionManager();
         let name = db.database as string;
         console.assert(name != null);
@@ -37,4 +41,4 @@ export let connection = createParameterDecorator(() => {
         }
         return resolve(connection);
     });
-});
+}

@@ -4,6 +4,7 @@ import { getVirtualPaths } from "maishu-admin-scaffold";
 import { ConnectionOptions, createConnection } from "maishu-node-data";
 import websiteConfig from "./static/website-config";
 import { sourceVirtualPaths } from "maishu-chitu-scaffold";
+import { HtmlTransform } from "./content-transforms/html-transform";
 
 interface Settings {
     port: number,
@@ -42,9 +43,8 @@ export function start(settings: Settings) {
     for (let c in componentStations) {
         proxy[`^/${c}/(\\S*)`] = `${componentStations[c]}/$1`;
     }
-    // share: `http://127.0.0.1:6739/share`
+
     proxy[`^/share/(\\S*)`] = `${websiteConfig.componentShare}/$1`;
-    // proxy["/\\S+/aixpi/(\\S*)"] = `/aixpi/(\\S*)`;
 
     let mvcSettings: MVCSettings = {
         port,
@@ -52,13 +52,28 @@ export function start(settings: Settings) {
         websiteDirectory: __dirname,
         virtualPaths,
         proxy,
-        pathRewrite: {
-            "^/product/[0-9a-fA-F]{8}": "preview.html",
-            "^/product/(\\S+)": "/$1",
-        }
+        // urlRewrite: (rawUrl, options) => {
+        //     let router = createRouter("/store/:applicationId/:pageId/?productId/*filePath", {
+        //         applicationId: /[0-9A-Fa-f\-]{36}/,
+        //         pageId: /[0-9A-Fa-f\-]{36}/,
+        //         productId: /[0-9A-Fa-f\-]{36}/,
+        //         filePath: /[0-9A-Za-z\-_\/\.]/,
+        //     });
+        //     let m = router.match(rawUrl);
+        //     if (m) {
+        //         if (m.filePath)
+        //             return pathConcat("/", m.filePath);
+
+        //         let q = Object.keys(m).filter(o => m[o] != null).map(o => `${o}=${m[o]}`).join('&');
+        //         let u = `/preview.html?${q}`;
+        //         return u;
+        //     }
+        //     return null;
+        // }
     }
 
     let server = startServer(mvcSettings, "mvc");
+    server.contentTransforms.push(new HtmlTransform());
 }
 
 
