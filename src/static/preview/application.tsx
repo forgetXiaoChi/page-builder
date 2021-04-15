@@ -5,6 +5,11 @@ import w from "../website-config";
 import { LocalService } from "../services";
 import { FooterComponentData, HeaderComponentData, PageHelper } from "../controls/page-helper";
 import { PageData } from "maishu-jueying-core";
+import { createRouter } from "maishu-router";
+
+let routers = [
+    createRouter("/:id/:productId", { productId: /[0-9A-Fa-f\-]{36}/ })
+]
 
 type WebsiteConfig = typeof w;
 
@@ -31,33 +36,7 @@ class MyApplication extends Application {
         })
     }
 
-    private siteRequireJS = {};
-
     async loadjs(path: string) {
-
-        if (path.startsWith("modules//")) {
-            path = path.substr("modules//".length);
-            let arr = path.split("/");
-            console.assert(arr.length >= 2);
-            let sitePath = arr.shift();
-            if (!this.siteRequireJS[sitePath]) {
-                let websiteConfig = await this.getWebsiteConfig(sitePath);
-                this.siteRequireJS[sitePath] = this.configRequirejs(websiteConfig, sitePath);
-            }
-
-            let newPath = `modules/${arr.join('/')}`;
-            return new Promise((resolve, reject) => {
-                this.siteRequireJS[sitePath]([newPath],
-                    mod => {
-                        resolve(mod)
-                    },
-                    err => {
-                        reject(err)
-                    }
-                );
-            })
-        }
-
         return new Promise<any>((reslove, reject) => {
             this.req([path],
                 function (result: any) {
@@ -71,70 +50,12 @@ class MyApplication extends Application {
         });
     }
 
-    private getWebsiteConfig(sitePath: string) {
-        return new Promise<WebsiteConfig>((resolve, reject) => {
-            let websiteConfigPath = pathConcat(sitePath, "website-config.js");
-            this.req([websiteConfigPath], mod => {
-                resolve(mod.default || mod);
-            }, err => {
-                reject(err);
-            })
-        })
+    run() {
+        let url: string = window["actualUrl"] || location.href;
+        let queryIndex = url.indexOf("?");
+        let query = url.substr(queryIndex);
+        this.showPage("page" + query);
     }
-
-    private configRequirejs(stationWebsiteConfig: WebsiteConfig, sitePath: string) {
-        stationWebsiteConfig.requirejs = stationWebsiteConfig.requirejs || { paths: {} };
-        stationWebsiteConfig.requirejs.paths = stationWebsiteConfig.requirejs.paths || {};
-        stationWebsiteConfig.requirejs["context"] = sitePath;
-        stationWebsiteConfig.requirejs["baseUrl"] = sitePath;
-
-        let req = requirejs.config(stationWebsiteConfig.requirejs);
-        return req;
-    }
-
-    // parseUrl(url: string) {
-    //     let pathname: string;
-    //     if (url.startsWith("http")) {
-    //         let a = document.createElement("a");
-    //         a.href = url;
-    //         pathname = a.pathname;
-    //     }
-    //     else {
-    //         pathname = url;
-    //     }
-
-    //     if (pathname[0] != "/")
-    //         pathname = "/" + pathname;
-
-    //     let keys = Object.keys(w.routers);
-    //     for (let i = 0; i < keys.length; i++) {
-    //         let p = new UrlPattern(keys[i]);
-    //         let m = p.match(pathname);
-    //         if (m) {
-    //             m = Object.assign(m, w.routers[keys[i]]);
-    //             if (!m.pageName)
-    //                 throw new Error("Router parse result is not contains pageName.");
-
-    //             let pageName = Array.isArray(m.pageName) ? (m.pageName as string[]).join("/") : m.pageName;
-    //             delete m.pageName;
-
-    //             if (m.appId) {
-    //                 Service.headers["application-id"] = m.appId;
-    //             }
-
-    //             return { pageName, values: m };
-    //         }
-    //     }
-
-
-
-    //     return super.parseUrl(url);
-    // }
-
-    // run() {
-    //     let url = window["actualUrl"] || location.href;
-    //     this.showPage(url);
-    // }
 
 }
 

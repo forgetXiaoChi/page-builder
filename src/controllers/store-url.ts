@@ -1,7 +1,7 @@
 import { action, controller, routeData, serverContext, ServerContext } from "maishu-nws-mvc";
 import { Connection } from "typeorm";
 import { connection } from "../decoders";
-import { PageRecord, StoreDomain } from "../entities";
+import { PageRecord, StoreInfo } from "../entities";
 import { errors } from "../static/errors";
 import { In } from "maishu-node-data";
 
@@ -15,9 +15,9 @@ export class StoreUrl {
         if (!d.appId) throw errors.routeDataFieldNull("appId");
 
         let host = ctx.req.headers.host;
-        let storeDomain: StoreDomain | null = null;
+        let storeDomain: StoreInfo | null = null;
         if (host) {
-            storeDomain = await conn.getRepository(StoreDomain).findOne({ domain: host });
+            storeDomain = await conn.getRepository(StoreInfo).findOne({ domain: host });
         }
 
         if (storeDomain) {

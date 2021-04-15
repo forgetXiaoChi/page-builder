@@ -38,6 +38,7 @@ let websiteConfig: MyWebsiteConfig = {
             "maishu-ui-toolkit": `${node_modules}/maishu-ui-toolkit/dist/index`,
             "maishu-wuzhui-helper": `${node_modules}/maishu-wuzhui-helper/dist/index`,
             "maishu-dilu": `${node_modules}/maishu-dilu/dist/index`,
+            "maishu-router": `${node_modules}/maishu-router/dist/index`,
 
             "devices": `content/devices.css-1.2/assets/devices.min.css`,
             "jquery": `${node_modules}/jquery/dist/jquery`,

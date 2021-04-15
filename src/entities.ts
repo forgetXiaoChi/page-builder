@@ -56,16 +56,7 @@ export class StoreInfo {
 
     @Column({ type: "varchar", length: 50 })
     theme: string;
-}
 
-@Entity("store_domain")
-export class StoreDomain {
-    @PrimaryColumn({ type: "char", length: 36 })
-    id: string
-
-    @Column({ type: "char", length: 36 })
-    applicationId: string
-
-    @Column({ type: "varchar", length: 100 })
-    domain: string
+    @Column({ type: "varchar", length: 100, nullable: true })
+    domain?: string
 }

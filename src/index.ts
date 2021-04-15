@@ -5,6 +5,12 @@ import { ConnectionOptions, createConnection } from "maishu-node-data";
 import websiteConfig from "./static/website-config";
 import { sourceVirtualPaths } from "maishu-chitu-scaffold";
 import { HtmlTransform } from "./content-transforms/html-transform";
+import { createRouter } from "maishu-router";
+import { pathConcat } from "maishu-toolkit";
+import * as querystring from "querystring";
+import { getMyConnection } from "./decoders";
+import { PageRecord, StoreInfo } from "./entities";
+import { IncomingMessage } from "http";
 
 interface Settings {
     port: number,
@@ -51,29 +57,99 @@ export function start(settings: Settings) {
         contextData,
         websiteDirectory: __dirname,
         virtualPaths,
-        proxy,
-        // urlRewrite: (rawUrl, options) => {
-        //     let router = createRouter("/store/:applicationId/:pageId/?productId/*filePath", {
-        //         applicationId: /[0-9A-Fa-f\-]{36}/,
-        //         pageId: /[0-9A-Fa-f\-]{36}/,
-        //         productId: /[0-9A-Fa-f\-]{36}/,
-        //         filePath: /[0-9A-Za-z\-_\/\.]/,
-        //     });
-        //     let m = router.match(rawUrl);
-        //     if (m) {
-        //         if (m.filePath)
-        //             return pathConcat("/", m.filePath);
-
-        //         let q = Object.keys(m).filter(o => m[o] != null).map(o => `${o}=${m[o]}`).join('&');
-        //         let u = `/preview.html?${q}`;
-        //         return u;
-        //     }
-        //     return null;
-        // }
+        proxy
     }
 
-    let server = startServer(mvcSettings, "mvc");
-    server.contentTransforms.push(new HtmlTransform());
+    startServer(mvcSettings, "mvc");
+
+    let storeServer = startServer({
+        port: port + 1,
+        websiteDirectory: __dirname,
+        virtualPaths,
+        proxy,
+        urlRewrite: (rawUrl, { req }) => {
+            return storeUrlRewrite(rawUrl, req);
+        }
+    })
+    storeServer.contentTransforms.push(new HtmlTransform());
 }
+
+const AppName = "application-id";
+async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
+
+    let queryIndex = rawUrl.indexOf("?");
+    let query: string | null = null;
+    let pathname: string = rawUrl;
+    if (queryIndex >= 0) {
+        query = rawUrl.substr(queryIndex + 1);
+        pathname = rawUrl.substr(0, queryIndex);
+    }
+
+    let router1 = createRouter("/:id/?productId/*filePath", {
+        id: /[0-9A-Fa-f\-]{36}/,
+        productId: /[0-9A-Fa-f\-]{36}/,
+        filePath: /[0-9A-Za-z\-_\/\.]/,
+    });
+
+    let router2 = createRouter("/:name/?productId/*filePath", {
+        name: /product|home/,
+        productId: /[0-9A-Fa-f\-]{36}/,
+        filePath: /[0-9A-Za-z\-_\/\.]/,
+    });
+
+
+    let m: { [key: string]: string } | null = null;
+    if (rawUrl == "/")
+        m = { name: "home" };
+
+    if (m == null)
+        m = router1.match(pathname);
+
+    if (m == null)
+        m = router2.match(pathname);
+
+    if (!m) {
+        return null;
+    }
+
+    if (query != null) {
+        let obj = querystring.parse(query);
+        m = Object.assign(obj || {}, m);
+    }
+
+    if (m.filePath)
+        return pathConcat("/", m.filePath);
+
+    if (m.id == null && m.name != null) {
+        let conn = await getMyConnection();
+        let storeInfos = conn.getRepository(StoreInfo);
+        let pageRecords = conn.getRepository(PageRecord);
+
+        let host = (req.headers["original-host"] || req.headers["delete-host"]) as string;
+        if (host) {
+            let storeInfo = await storeInfos.findOne({ domain: host });
+            if (storeInfo != null) {
+                m[AppName] = storeInfo.id;
+            }
+        }
+
+        let appId = m[AppName];
+        if (!appId)
+            throw new Error("Application id is null or empty.");
+
+        let pageRecord = await pageRecords.findOne({ name: m.name, applicationId: appId });
+        if (pageRecord == null)
+            throw new Error(`Page record with name '${m.name}' and applicationId '${appId}' is not exists.`);
+
+        m.id = pageRecord.id;
+    }
+
+    let q = Object.keys(m).filter(o => m[o] != null).map(o => `${o}=${m[o]}`).join('&');
+    let u = `/preview.html?${q}`;
+    return u;
+
+}
+
+
 
 

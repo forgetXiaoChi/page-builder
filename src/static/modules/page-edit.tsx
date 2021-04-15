@@ -6,7 +6,6 @@ import { PageRecord } from "../../entities";
 import { LocalService } from "../services";
 import { FormValidator, rules as r } from "maishu-dilu"
 import { dataSources } from "../services";
-// import { ComponentInfo } from "taro-builder-core";
 import { PageHelper } from "../controls/page-helper";
 import { EditorPanelProps } from "maishu-jueying";
 import { ComponentInfo } from "../model";
@@ -67,7 +66,6 @@ export default class PageEdit extends React.Component<Props, State> {
     private emptyRecord(): Partial<PageRecord> {
         let pageData = this.emptyPageData();
         let record: Partial<PageRecord> = {
-            // id: pageData.id,
             pageData,
             type: "page",
             createDateTime: new Date()

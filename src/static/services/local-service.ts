@@ -32,6 +32,26 @@ export class LocalService {
         return r;
     }
 
+    static pageUrl(path: string) {
+        let contexts = requirejs.exec("contexts");
+        let contextName = websiteConfig.requirejs?.context || "";
+        if (!contextName)
+            throw new Error("Context of website config is empty.");
+
+        let context = contexts[contextName];
+        let baseUrl = context?.config?.baseUrl;
+        let r: string;
+        if (!baseUrl)
+            r = path;
+        else
+            r = pathConcat(baseUrl, path);
+
+        if (r.startsWith("./"))
+            r = r.substr(2);
+
+        return r;
+    }
+
     static getContext(): RequirejsContext {
         let contexts = requirejs.exec("contexts");
         let contextName = websiteConfig.requirejs?.context || "";
