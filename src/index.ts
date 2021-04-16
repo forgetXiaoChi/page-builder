@@ -131,7 +131,8 @@ async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
 
         let host = (req.headers["original-host"] || req.headers["delete-host"]) as string;
         if (host) {
-            let storeInfo = await storeInfos.findOne({ domain: host });
+            let domain = host.split(":")[0];
+            let storeInfo = await storeInfos.findOne({ domain });
             if (storeInfo != null) {
                 m[AppName] = storeInfo.id;
             }
