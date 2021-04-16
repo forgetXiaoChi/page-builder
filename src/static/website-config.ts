@@ -32,7 +32,7 @@ let websiteConfig: MyWebsiteConfig = {
             "maishu-chitu-react": `${node_modules}/maishu-chitu-react/dist/index`,
             "maishu-chitu-service": `${node_modules}/maishu-chitu-service/dist/index`,
             "maishu-dilu-react": `${node_modules}/maishu-dilu-react/dist/index`,
-
+            "maishu-data-page": `${node_modules}/maishu-data-page/dist/index.min`,
             "maishu-image-components": `${node_modules}/maishu-image-components/dist/index`,
             "maishu-jueying": `${node_modules}/maishu-jueying/dist/index`,
             "maishu-jueying-core": `${node_modules}/maishu-jueying-core/dist/index`,
@@ -59,6 +59,9 @@ let websiteConfig: MyWebsiteConfig = {
         },
         {
             id: "7B13EC50-A398-4379-AED5-6AB3263EDB75", name: "主题", path: "#theme-list", sortNumber: 20,
+        },
+        {
+            id: "EAC315A7-D8BE-4E85-843B-0D16F3254485", name: "域名绑定", path: "#domain-binding", sortNumber: 30
         }
     ],
     mode: "production",

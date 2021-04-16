@@ -1,6 +1,5 @@
 
 import { Application } from "maishu-chitu-react";
-import { pathConcat } from "maishu-toolkit";
 import w from "../website-config";
 import { LocalService } from "../services";
 import { FooterComponentData, HeaderComponentData, PageHelper } from "../controls/page-helper";
@@ -31,7 +30,7 @@ class MyApplication extends Application {
                     let header = PageHelper.findHeader(r.pageData);
                     let footer = PageHelper.findFooter(r.pageData);
                     let elementId = "_" + (r.pageData as PageData).id.split("-").join("");
-                    createStyleElement(elementId, header, footer);
+                    // createStyleElement(elementId, header, footer);
                 })
         })
     }

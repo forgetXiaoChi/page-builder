@@ -69,4 +69,7 @@ export class StoreDomain {
     @Column({ type: "char", length: 36 })
     domain: string;
 
+    @Column({ type: "datetime" })
+    createDateTime: Date;
+
 }

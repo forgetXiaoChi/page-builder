@@ -85,7 +85,7 @@ export class StoreHtmlTransform implements ContentTransform {
 
 
 export function getDomain(req: IncomingMessage) {
-    let host = (req.headers["original-host"] || req.headers["delete-host"]) as string;
+    let host = (req.headers["original-host"] || req.headers["delete-host"] || req.headers["host"]) as string;
     if (!host) {
         return null;
     }

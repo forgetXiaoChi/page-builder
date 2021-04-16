@@ -100,6 +100,11 @@ async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
             productId: /[0-9A-Fa-f\-]{36}/,
             filePath: /[0-9A-Za-z\-_\/\.]/,
         }),
+        createRouter("/:name/:productName/*filePath", {
+            name: /product/,
+            productName: /\\S+/,
+            filePath: /[0-9A-Za-z\-_\/\.]/,
+        }),
         createRouter("/:name/:orderId/*filePath", {
             name: /checkout/,
             orderId: /[0-9A-Fa-f\-]{36}/,
@@ -111,7 +116,7 @@ async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
         }),
     ]
 
-   
+
     let m: { [key: string]: string } | null = null;
     if (rawUrl == "/")
         m = { name: "home" };
