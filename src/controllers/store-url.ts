@@ -4,6 +4,7 @@ import { connection } from "../decoders";
 import { PageRecord, StoreInfo } from "../entities";
 import { errors } from "../static/errors";
 import { In } from "maishu-node-data";
+import { getDomain } from "../content-transforms/html-transform";
 
 let pageNames = ["account", "shopping-cart", "product-list", "product", "order-detail", "receipt-edit",
     "receipt-list", "index", "login", "search", "checkout", "shipping"];
@@ -14,23 +15,21 @@ export class StoreUrl {
     async get(@routeData d: { appId: string }, @serverContext ctx: ServerContext, @connection conn: Connection) {
         if (!d.appId) throw errors.routeDataFieldNull("appId");
 
-        let host = ctx.req.headers.host;
-        let storeDomain: StoreInfo | null = null;
-        if (host) {
-            storeDomain = await conn.getRepository(StoreInfo).findOne({ domain: host });
-        }
+        // let domain = getDomain(ctx.req);
+        // let storeDomain: StoreInfo | null = null;
+        // storeDomain = await conn.getRepository().findOne({ domain });
 
-        if (storeDomain) {
-            let dic: { [key: string]: string } = {};
-            for (let i = 0; i < pageNames.length; i++) {
-                conn.getRepository(PageRecord).find({
-                    where: { name: In(pageNames) },
-                    select: ["id", "name"],
-                });
+        // if (storeDomain) {
+        //     let dic: { [key: string]: string } = {};
+        //     for (let i = 0; i < pageNames.length; i++) {
+        //         conn.getRepository(PageRecord).find({
+        //             where: { name: In(pageNames) },
+        //             select: ["id", "name"],
+        //         });
 
-                dic[pageNames[i]] = "account"
-            }
-        }
+        //         dic[pageNames[i]] = "account"
+        //     }
+        // }
 
         return {}
     }

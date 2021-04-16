@@ -2,11 +2,12 @@ import { ContentTransform, RequestContext, RequestResult } from "maishu-node-mvc
 import stream = require("stream");
 import * as HTMLParser from "node-html-parser";
 import { getMyConnection } from "../decoders";
-import { StoreInfo } from "../entities";
+import { StoreDomain, StoreInfo } from "../entities";
 import * as url from "url";
 import * as querystring from "querystring";
+import { IncomingMessage } from "http";
 
-export class HtmlTransform implements ContentTransform {
+export class StoreHtmlTransform implements ContentTransform {
     async execute(result: RequestResult, context: RequestContext): Promise<RequestResult> {
         let contentType = result.headers == null ? "" : result.headers["content-type"] || result.headers["Content-Type"] || "";
         if (contentType.indexOf("html") < 0) {
@@ -32,8 +33,9 @@ export class HtmlTransform implements ContentTransform {
         script.innerHTML = script.innerHTML + `window["actualUrl"]='${context.url}';\r\n`;
 
         let conn = await getMyConnection();
-        let storeInfos = conn.getRepository(StoreInfo);
-        let storeDomain = await storeInfos.findOne({ domain: context.req.headers.host || "" });
+        let storeDomains = conn.getRepository(StoreDomain);
+        let domain = getDomain(context.req);
+        let storeDomain = await storeDomains.findOne({ domain });
         let applicationId: string | null = null;
         if (storeDomain) {
             script.innerHTML = script.innerHTML + `window["storeDomain"]='${storeDomain.domain}';\r\n`;
@@ -79,4 +81,15 @@ export class HtmlTransform implements ContentTransform {
             }
         })
     }
+}
+
+
+export function getDomain(req: IncomingMessage) {
+    let host = (req.headers["original-host"] || req.headers["delete-host"]) as string;
+    if (!host) {
+        return null;
+    }
+
+    let domain = host.split(":")[0];
+    return domain;
 }

@@ -4,12 +4,12 @@ import { getVirtualPaths } from "maishu-admin-scaffold";
 import { ConnectionOptions, createConnection } from "maishu-node-data";
 import websiteConfig from "./static/website-config";
 import { sourceVirtualPaths } from "maishu-chitu-scaffold";
-import { HtmlTransform } from "./content-transforms/html-transform";
+import { getDomain, StoreHtmlTransform } from "./content-transforms/html-transform";
 import { createRouter } from "maishu-router";
 import { pathConcat } from "maishu-toolkit";
 import * as querystring from "querystring";
 import { getMyConnection } from "./decoders";
-import { PageRecord, StoreInfo } from "./entities";
+import { PageRecord, StoreDomain, StoreInfo } from "./entities";
 import { IncomingMessage } from "http";
 
 interface Settings {
@@ -71,7 +71,7 @@ export function start(settings: Settings) {
             return storeUrlRewrite(rawUrl, req);
         }
     })
-    storeServer.contentTransforms.push(new HtmlTransform());
+    storeServer.contentTransforms.push(new StoreHtmlTransform());
 }
 
 const AppName = "application-id";
@@ -88,29 +88,41 @@ async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
         pathname = rawUrl.substr(0, queryIndex);
     }
 
-    let router1 = createRouter("/:id/?productId/*filePath", {
-        id: /[0-9A-Fa-f\-]{36}/,
-        productId: /[0-9A-Fa-f\-]{36}/,
-        filePath: /[0-9A-Za-z\-_\/\.]/,
-    });
-
     let nameRegex = new RegExp(pageNames.join("|"));
-    let router2 = createRouter("/:name/?productId/*filePath", {
-        name: nameRegex,
-        productId: /[0-9A-Fa-f\-]{36}/,
-        filePath: /[0-9A-Za-z\-_\/\.]/,
-    });
+    let routers = [
+        createRouter("/:id/?productId/*filePath", {
+            id: /[0-9A-Fa-f\-]{36}/,
+            productId: /[0-9A-Fa-f\-]{36}/,
+            filePath: /[0-9A-Za-z\-_\/\.]/,
+        }),
+        createRouter("/:name/:productId/*filePath", {
+            name: /product/,
+            productId: /[0-9A-Fa-f\-]{36}/,
+            filePath: /[0-9A-Za-z\-_\/\.]/,
+        }),
+        createRouter("/:name/:orderId/*filePath", {
+            name: /checkout/,
+            orderId: /[0-9A-Fa-f\-]{36}/,
+            filePath: /[0-9A-Za-z\-_\/\.]/,
+        }),
+        createRouter("/:name/*filePath", {
+            name: nameRegex,
+            filePath: /[0-9A-Za-z\-_\/\.]/,
+        }),
+    ]
 
-
+   
     let m: { [key: string]: string } | null = null;
     if (rawUrl == "/")
         m = { name: "home" };
 
-    if (m == null)
-        m = router1.match(pathname);
-
-    if (m == null)
-        m = router2.match(pathname);
+    if (m == null) {
+        for (let i = 0; i < routers.length; i++) {
+            m = routers[i].match(rawUrl);
+            if (m)
+                break;
+        }
+    }
 
     if (!m) {
         return null;
@@ -126,16 +138,13 @@ async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
 
     if (m.id == null && m.name != null) {
         let conn = await getMyConnection();
-        let storeInfos = conn.getRepository(StoreInfo);
+        let storeDomains = conn.getRepository(StoreDomain);
         let pageRecords = conn.getRepository(PageRecord);
 
-        let host = (req.headers["original-host"] || req.headers["delete-host"]) as string;
-        if (host) {
-            let domain = host.split(":")[0];
-            let storeInfo = await storeInfos.findOne({ domain });
-            if (storeInfo != null) {
-                m[AppName] = storeInfo.id;
-            }
+        let domain = getDomain(req);
+        let storeDomain = await storeDomains.findOne({ domain });
+        if (storeDomain != null) {
+            m[AppName] = storeDomain.applicationId;
         }
 
         let appId = m[AppName];

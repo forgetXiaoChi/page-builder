@@ -12,10 +12,12 @@ let websiteConfig: MyWebsiteConfig = {
     //===================================================
     // 组件站点配置
     componentStations: {
-        aixpi: `http://127.0.0.1:6739/aixpi`,
-        flone: `http://127.0.0.1:6739/flone`,
+        // aixpi: `http://127.0.0.1:6739/aixpi`,
+        // flone: `http://127.0.0.1:6739/flone`,
+        aixpi: `http://192.168.2.14:6739/aixpi`,
+        flone: `http://192.168.2.14:6739/flone`,
     },
-    componentShare: "http://127.0.0.1:6739/share",
+    componentShare: "http://192.168.2.14:6739/share",
     //===================================================
     requirejs: {
         context: "site",
@@ -59,10 +61,6 @@ let websiteConfig: MyWebsiteConfig = {
             id: "7B13EC50-A398-4379-AED5-6AB3263EDB75", name: "主题", path: "#theme-list", sortNumber: 20,
         }
     ],
-    routers: {
-        "/site/:id(/:productId)": { pageName: "page" },
-        "/:id(/:productId)": { pageName: "page" },
-    },
     mode: "production",
 };
 export default websiteConfig;

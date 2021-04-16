@@ -6,7 +6,7 @@ import { ComponentInfo } from "../model";
 import websiteConfig from "../website-config";
 import { errorHandle } from "../error-handle";
 
-Service.headers["application-id"] = window["applicationId"];
+Service.headers["application-id"] = "7bbfa36c-8115-47ad-8d47-9e52b58e7efd";// window["applicationId"] || window["application-id"];
 
 let service = new Service(err => errorHandle(err));
 
@@ -209,7 +209,6 @@ export class LocalService {
 
         return null;
     }
-
 }
 
 export interface ComponentStationConfig {
