@@ -75,6 +75,9 @@ export function start(settings: Settings) {
 }
 
 const AppName = "application-id";
+const pageNames = ["account", "checkout", "login", "home", "login", "order-detail", "product", "product-list",
+    "receipt-edit", "receipt-list", "search", "shopping-cart"];
+
 async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
 
     let queryIndex = rawUrl.indexOf("?");
@@ -91,8 +94,9 @@ async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
         filePath: /[0-9A-Za-z\-_\/\.]/,
     });
 
+    let nameRegex = new RegExp(pageNames.join("|"));
     let router2 = createRouter("/:name/?productId/*filePath", {
-        name: /product|home/,
+        name: nameRegex,
         productId: /[0-9A-Fa-f\-]{36}/,
         filePath: /[0-9A-Za-z\-_\/\.]/,
     });
