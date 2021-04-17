@@ -4,6 +4,7 @@ import * as React from "react";
 import { boundField, createGridView, customDataField, dateTimeField } from "maishu-wuzhui-helper";
 import * as ReactDOM from "react-dom";
 import { LocalService } from "../services/local-service";
+import { data } from "jquery";
 
 export default class PageListPage extends React.Component {
     tableRef(e: HTMLTableElement) {
@@ -20,7 +21,7 @@ export default class PageListPage extends React.Component {
                     render: (dataItem, cellElement) => {
                         ReactDOM.render(<>
                             <button key="btnAdd" className="btn btn-info btn-minier"
-                                onClick={() => location.href = LocalService.url(`${dataItem.themeName}-page-edit`)}>
+                                onClick={() => location.href = this.editUrl(dataItem.themeName, data.name)}>
                                 <i className="fa fa-pencil"></i>
                             </button>
                             <button key="btn-delete" className="btn btn-danger btn-minier"
@@ -32,6 +33,9 @@ export default class PageListPage extends React.Component {
                 })
             ]
         })
+    }
+    editUrl(themeName: string, name: string) {//  `#/${LocalService.url(`${dataItem.themeName}-page-edit`)}`
+        return `#/${LocalService.url(`${themeName}-page-edit?name=${name}`)}`;
     }
     render() {
         return <div>

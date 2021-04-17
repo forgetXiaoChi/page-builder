@@ -71,5 +71,22 @@ export class StoreDomain {
 
     @Column({ type: "datetime" })
     createDateTime: Date;
+}
 
+@Entity("url-rewrite")
+export class UrlRewrite {
+    @PrimaryColumn({ type: "char", length: 36 })
+    id: string;
+
+    @Column({ type: "varchar", length: 200 })
+    originalUrl: string;
+
+    @Column({ type: "varchar", length: 200 })
+    newUrl: string;
+
+    @Column({ type: "datetime" })
+    createDateTime: Date;
+
+    @Column({ type: "char", length: 36 })
+    applicationId: string;
 }

@@ -9,7 +9,7 @@ import { createRouter } from "maishu-router";
 import { pathConcat } from "maishu-toolkit";
 import * as querystring from "querystring";
 import { getMyConnection } from "./decoders";
-import { PageRecord, StoreDomain, StoreInfo } from "./entities";
+import { PageRecord, StoreDomain, StoreInfo, UrlRewrite } from "./entities";
 import { IncomingMessage } from "http";
 
 interface Settings {
@@ -79,6 +79,16 @@ const pageNames = ["account", "checkout", "login", "home", "login", "order-detai
     "receipt-edit", "receipt-list", "search", "shopping-cart"];
 
 async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
+
+    //===============================================================
+    // 优化查询
+    let conn = await getMyConnection();
+    let urlRewrites = conn.getRepository(UrlRewrite);
+    let item = await urlRewrites.findOne({ newUrl: rawUrl });
+    if (item) {
+        rawUrl = item.originalUrl;
+    }
+    //===============================================================
 
     let queryIndex = rawUrl.indexOf("?");
     let query: string | null = null;

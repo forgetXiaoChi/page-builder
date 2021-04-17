@@ -292,7 +292,7 @@ export default class PCPageEdit extends React.Component<Props, State> {
                     </li>
                     <li className="pull-right">
                         <button className="btn btn-sm btn-primary"
-                            onClick={() => this.props.app.redirect("page-list")}>
+                            onClick={() => this.props.app.back()}>
                             <i className="fa fa-reply"></i><span>返回</span>
                         </button>
                     </li>

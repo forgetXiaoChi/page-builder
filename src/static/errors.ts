@@ -29,6 +29,15 @@ class Errors extends BaseErrors {
         let msg = `Load module '${modulePath}' fail.`;
         return new Error(msg);
     }
+    applicationIdNotMatch(expected: string, actual: string) {
+        let msg = `Application id is not match, expected: ${expected}, acutal: ${actual}.`;
+        let error = new Error(msg);
+        return error;
+    }
+    objectNotExists(objectName: string, id: string) {
+        let msg = `${objectName} with id '${id}' is not exists.`;
+        return new Error(msg);
+    }
 }
 
 export let errors = new Errors();

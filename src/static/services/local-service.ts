@@ -1,12 +1,12 @@
 import { Callbacks, Service, ValueStore } from "maishu-chitu-service";
 import { DataSourceSelectArguments, DataSourceSelectResult } from "maishu-wuzhui-helper";
-import { PageRecord } from "../../entities";
+import { PageRecord, StoreDomain, UrlRewrite } from "../../entities";
 import { errors, pathConcat } from "maishu-toolkit";
 import { ComponentInfo } from "../model";
 import websiteConfig from "../website-config";
 import { errorHandle } from "../error-handle";
 
-Service.headers["application-id"] = "7bbfa36c-8115-47ad-8d47-9e52b58e7efd";// window["applicationId"] || window["application-id"];
+Service.headers["application-id"] = localStorage.getItem("application-id");//"7bbfa36c-8115-47ad-8d47-9e52b58e7efd";
 
 let service = new Service(err => errorHandle(err));
 
@@ -102,6 +102,51 @@ export class LocalService {
     async getPageDataByName(name: string): Promise<PageRecord> {
         if (!name) throw errors.argumentNull("name");
         let r = await service.getByJson<PageRecord>(LocalService.url("page-data/item"), { name });
+        return r;
+    }
+
+    storeDomainList(args: DataSourceSelectArguments): Promise<DataSourceSelectResult<StoreDomain>> {
+        let url = LocalService.url("store-domain/list");
+        return service.getByJson<DataSourceSelectResult<StoreDomain>>(url);
+    }
+
+    insertStoreDomain(item: StoreDomain) {
+        let url = LocalService.url("store-domain/insert");
+        return service.postByJson(url, { item });
+    }
+
+    updateStoreDomain(item: StoreDomain) {
+        let url = LocalService.url("store-domain/update");
+        return service.postByJson(url, { item });
+    }
+
+    deleteStoreDomain(item: StoreDomain) {
+        let url = LocalService.url("store-domain/delete");
+        return service.delete(url, { id: item.id });
+    }
+
+    urlRewriteList(args: DataSourceSelectArguments) {
+        let url = LocalService.url("url-rewrite/list");
+        return service.getByJson<DataSourceSelectResult<UrlRewrite>>(url, { args });
+    }
+
+    async urlRewriteInsert(item: UrlRewrite) {
+        let url = LocalService.url("url-rewrite/insert");
+        let r = await service.postByJson(url, { item });
+        Object.assign(item, r);
+        return r;
+    }
+
+    async urlRewriteUpdate(item: UrlRewrite) {
+        let url = LocalService.url("url-rewrite/update");
+        let r = await service.postByJson(url, { item });
+        Object.assign(item, r);
+        return r;
+    }
+
+    async urlRewriteDelete(item: UrlRewrite) {
+        let url = LocalService.url("url-rewrite/delete");
+        let r = await service.postByJson(url, { item });
         return r;
     }
 

@@ -62,6 +62,9 @@ let websiteConfig: MyWebsiteConfig = {
         },
         {
             id: "EAC315A7-D8BE-4E85-843B-0D16F3254485", name: "域名绑定", path: "#domain-binding", sortNumber: 30
+        },
+        {
+            id: "FADCEEB3-145D-4131-BCB4-BFCF7D5FE167", name: "链接改写", path: "#url-rewrite", sortNumber: 30
         }
     ],
     mode: "production",

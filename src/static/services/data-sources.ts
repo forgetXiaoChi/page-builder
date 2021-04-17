@@ -1,5 +1,5 @@
 import { DataSource } from "maishu-toolkit";
-import { PageRecord, StoreDomain } from "../../entities";
+import { PageRecord, StoreDomain, UrlRewrite } from "../../entities";
 import { LocalService } from "../services/local-service";
 
 let localService = new LocalService();
@@ -35,7 +35,24 @@ let storeDomainDataSource = new DataSource<StoreDomain>({
     }
 })
 
+let urlRewriteDataSource = new DataSource<UrlRewrite>({
+    primaryKeys: ["id"],
+    select: async (args) => {
+        return localService.urlRewriteList(args);
+    },
+    insert: async (item) => {
+        return localService.urlRewriteInsert(item);
+    },
+    update: async (item) => {
+        return localService.urlRewriteUpdate(item);
+    },
+    delete: async (item) => {
+        return localService.urlRewriteDelete(item);
+    }
+})
+
 export let dataSources = {
     pageRecords: pageDataDataSource,
     storeDomain: storeDomainDataSource,
+    urlRewrite: urlRewriteDataSource,
 }

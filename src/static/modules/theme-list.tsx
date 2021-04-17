@@ -1,6 +1,6 @@
 import { buttonOnClick } from "maishu-ui-toolkit";
 import * as  React from "react";
-import { LocalService } from "../services/local-service";
+import { LocalService } from "../services";
 import websiteConfig from "../website-config";
 
 let localService = new LocalService();
