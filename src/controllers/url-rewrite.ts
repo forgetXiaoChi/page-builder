@@ -10,7 +10,16 @@ import { errors } from "../static/errors";
 @controller("url-rewrite")
 export class UrlRewriteController {
     @action()
-    async list(@connection conn: Connection, @routeData d: { args: DataSourceSelectArguments }) {
+    async list(@connection conn: Connection, @routeData d: { args: DataSourceSelectArguments }, @currentAppId appId: string) {
+        let APP_ID: keyof UrlRewrite = "applicationId";
+        if (!d.args) throw errors.routeDataFieldNull("args");
+        if (d.args.filter) {
+            d.args.filter = `(${d.args.filter}) and (${APP_ID} = '${appId}')`
+        }
+        else {
+            d.args.filter = `${APP_ID} = '${appId}'`
+        }
+        
         let urlRewrites = conn.getRepository(UrlRewrite);
         let r = DataHelper.list(urlRewrites, { selectArguments: d.args });
         return r;

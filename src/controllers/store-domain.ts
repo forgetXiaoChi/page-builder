@@ -8,15 +8,27 @@ import { errors } from "../static/errors";
 @controller("store-domain")
 export class StoreDomainController {
     @action()
-    async list(@connection conn: Connection) {
+    async list(@connection conn: Connection, @currentAppId appId) {
+        if (!appId) throw errors.argumentNull("appId");
+
         let storeDomains = conn.getRepository(StoreDomain);
-        let r = await DataHelper.list(storeDomains);
+        let r = await DataHelper.list(storeDomains, { selectArguments: { filter: `applicationId='${appId}'` } });
         return r;
     }
 
     @action()
     async insert(@connection conn: Connection, @routeData d: { item: StoreDomain }, @currentAppId appId: string) {
+        if (!d.item.domain) throw errors.argumentFieldNull("domain", "item");
+
         let storeDomains = conn.getRepository(StoreDomain);
+        let obj = await storeDomains.findOne({
+            where: { domain: d.item.domain },
+            select: ["id"],
+        });
+
+        if (obj != null)
+            throw errors.domainExists(d.item.domain);
+
         d.item.id = guid();
         d.item.createDateTime = new Date();
         d.item.applicationId = appId;
