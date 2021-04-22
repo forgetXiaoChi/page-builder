@@ -1,14 +1,40 @@
 import { Callbacks, Service, ValueStore } from "maishu-chitu-service";
 import { DataSourceSelectArguments, DataSourceSelectResult } from "maishu-wuzhui-helper";
-import { PageRecord, StoreDomain, UrlRewrite } from "../../entities";
+import { HtmlSnippet, PageRecord, StoreDomain, UrlRewrite } from "../../entities";
 import { errors, pathConcat } from "maishu-toolkit";
 import { ComponentInfo } from "../model";
 import websiteConfig from "../website-config";
 import { errorHandle } from "../error-handle";
 
-Service.headers["application-id"] = localStorage.getItem("application-id");//"7bbfa36c-8115-47ad-8d47-9e52b58e7efd";
+
+Service.headers["application-id"] = getApplicationId()
 
 let service = new Service(err => errorHandle(err));
+
+function getApplicationId() {
+    if (localStorage.getItem("application-id")) {
+        return localStorage.getItem("application-id");
+    }
+
+    function getQueryVariable(query: string, variable: string) {
+        var vars = query.split('&');
+        for (var i = 0; i < vars.length; i++) {
+            var pair = vars[i].split('=');
+            if (decodeURIComponent(pair[0]) == variable) {
+                return decodeURIComponent(pair[1]);
+            }
+        }
+        console.log('Query variable %s not found', variable);
+    }
+
+    let r = getQueryVariable(location.search.substring(1), "application-id");
+    if (!r)
+        getQueryVariable(location.hash.substring(1), "application-id");
+
+    return r;
+}
+
+
 
 export class LocalService {
 
@@ -150,6 +176,30 @@ export class LocalService {
         return r;
     }
 
+    async htmlSnippetList(args: DataSourceSelectArguments) {
+        let url = LocalService.url("html-snippet/list");
+        return service.getByJson<DataSourceSelectResult<HtmlSnippet>>(url, { args });
+    }
+
+    async htmlSnippetInsert(item: HtmlSnippet) {
+        let url = LocalService.url("html-snippet/insert");
+        return service.postByJson(url, { item });
+    }
+
+    async htmlSnippetUpdate(item: HtmlSnippet) {
+        let url = LocalService.url("html-snippet/update");
+        let r = await service.postByJson(url, { item });
+        Object.assign(item, r);
+        return r;
+    }
+
+    async htmlSnippetDelete(item: HtmlSnippet) {
+        let url = LocalService.url("html-snippet/delete");
+        let r = await service.postByJson(url, { id: item.id });
+        return r;
+    }
+
+
     async componentInfos(times: "designtime" | "runtime") {
         let config = await this.componentStationConfig(times);
         return config.components;
@@ -171,8 +221,8 @@ export class LocalService {
         this._componentStationConfig = await this.loadJS(url);
 
         let _componentInfos = this._componentStationConfig.components;
-        if (_componentInfos["pathContacted"] == undefined) {
-            _componentInfos["pathContacted"] = true;
+        if ((_componentInfos as any)["pathContacted"] == undefined) {
+            (_componentInfos as any)["pathContacted"] = true;
             _componentInfos.forEach(o => {
                 if (o.path != null) {
                     o.path = pathConcat(themenName, o.path);

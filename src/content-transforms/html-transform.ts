@@ -2,7 +2,7 @@ import { ContentTransform, RequestContext, RequestResult } from "maishu-node-mvc
 import stream = require("stream");
 import * as HTMLParser from "node-html-parser";
 import { getMyConnection } from "../decoders";
-import { StoreDomain, StoreInfo } from "../entities";
+import { HtmlSnippet, StoreDomain, StoreInfo } from "../entities";
 import * as url from "url";
 import * as querystring from "querystring";
 import { IncomingMessage } from "http";
@@ -39,7 +39,7 @@ export class StoreHtmlTransform implements ContentTransform {
         let applicationId: string | null = null;
         if (storeDomain) {
             script.innerHTML = script.innerHTML + `window["storeDomain"]='${storeDomain.domain}';\r\n`;
-            applicationId = storeDomain.id;
+            applicationId = storeDomain.applicationId;
         }
         else {
             let u = url.parse(context.url);
@@ -49,13 +49,27 @@ export class StoreHtmlTransform implements ContentTransform {
 
         if (!applicationId) {
             result.content = "Can not get application id.";
-        }
-        else {
-            script.innerHTML = script.innerHTML + `window["applicationId"]='${applicationId}';\r\n`;
-            result.content = htmlElement.toString();
+            return result;
         }
 
+        script.innerHTML = script.innerHTML + `window["applicationId"]='${applicationId}';\r\n`;
 
+        //=========================================================================================
+        // 实现 HTML 片段附加到页面
+        let htmlSnippetRepository = conn.getRepository(HtmlSnippet);
+        let htmlSnippets = await htmlSnippetRepository.find({ applicationId: applicationId });
+        for (let i = 0; i < htmlSnippets.length; i++) {
+            let url = context.req.url || "";
+            if ((htmlSnippets[i].isRegex && new RegExp(htmlSnippets[i].url).test(url)) ||
+                (htmlSnippets[i].isRegex != true && htmlSnippets[i].url == url)) {
+                if (htmlSnippets[i].target == "head") {
+                    headElement.appendChild(HTMLParser.parse(htmlSnippets[i].code));
+                }
+            }
+        }
+        //=========================================================================================
+
+        result.content = htmlElement.toString();
         return result;
     }
 
