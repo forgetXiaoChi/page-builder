@@ -4,6 +4,7 @@ start({
     port: 5217,
     componentStation: "http://127.0.0.1:6737",
     imageHost: "192.168.2.94:2880/image",
+    messageHost: "192.168.2.94:6247",
     db: {
         type: "mysql", username: "root", password: "81263", name: "taro-builder",
         database: "taro-builder", entities: ["../out/entities.js"],

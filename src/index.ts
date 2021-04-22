@@ -11,10 +11,12 @@ import * as querystring from "querystring";
 import { getMyConnection } from "./decoders";
 import { PageRecord, StoreDomain, StoreInfo, UrlRewrite } from "./entities";
 import { IncomingMessage } from "http";
+import { startMessage } from "./message";
 
 interface Settings {
     port: number,
     // componentStations: { [key: string]: string },
+    messageHost: string,
     imageHost: string,
     db: ConnectionOptions,
     menuItems?: MenuItem[],
@@ -24,8 +26,10 @@ export function start(settings: Settings) {
 
     let { imageHost, port, db } = settings;
 
+
     createConnection(db);
 
+    startMessage(settings.messageHost);
     let contextData: ContextData = {
         db,
         menuItem: settings.menuItems || []
@@ -75,8 +79,8 @@ export function start(settings: Settings) {
 }
 
 const AppName = "application-id";
-const pageNames = ["account", "checkout", "login", "home", "login", "order-detail", "product", "product-list",
-    "receipt-edit", "receipt-list", "search", "shopping-cart"];
+const pageNames = ["account", "checkout", "login", "home", "login", "order-detail", "order-list", "product", "product-list",
+    "receipt-edit", "receipt-list", "search", "shipping", "shopping-cart"];
 
 async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
 
@@ -85,7 +89,7 @@ async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
     let conn = await getMyConnection();
     let urlRewrites = conn.getRepository(UrlRewrite);
     let item = await urlRewrites.findOne({ newUrl: rawUrl });
-    if (item) {
+    if (item && item.originalUrl != null) {
         rawUrl = item.originalUrl;
     }
     //===============================================================
@@ -116,8 +120,13 @@ async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
             filePath: /[0-9A-Za-z\-_\/\.]/,
         }),
         createRouter("/:name/:orderId/*filePath", {
-            name: /checkout/,
+            name: /checkout|order-detail|shipping|register/,
             orderId: /[0-9A-Fa-f\-]{36}/,
+            filePath: /[0-9A-Za-z\-_\/\.]/,
+        }),
+        createRouter("/:name/:orderId/*filePath", {
+            name: /receipt-edit/,
+            receiptId: /[0-9A-Fa-f\-]{36}/,
             filePath: /[0-9A-Za-z\-_\/\.]/,
         }),
         createRouter("/:name/*filePath", {

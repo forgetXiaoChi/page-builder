@@ -1,6 +1,7 @@
 import { createParameterDecorator, VirtualDirectory } from "maishu-node-mvc";
 import { getConnectionManager, createConnection, getConnection, Connection } from "maishu-node-data";
 import { ConnectionOptions } from "maishu-node-data";
+import * as querystring from "querystring";
 
 let db: ConnectionOptions = {
     type: "mysql", username: "root", password: "81263", name: "taro-builder",
@@ -17,7 +18,8 @@ export type ServerContextData = {
 export let currentAppId = createParameterDecorator(async (context, routeData) => {
     let name = "application-id";
     // let u = new URL(context.)
-    let appId = context.req.headers[name] || routeData[name];
+    let u = querystring.parse(context.req.url);
+    let appId = u[name] || context.req.headers[name] || routeData[name];
     return appId;
 });
 

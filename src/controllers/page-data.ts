@@ -8,13 +8,20 @@ import { connection, currentAppId } from "../decoders";
 @controller("page-data")
 export class PageDataController {
     @action()
-    async list(@connection conn: Connection, @routeData { args }: { args: SelectArguments }) {
+    async list(@connection conn: Connection, @routeData { args }: { args: SelectArguments }, @currentAppId appId: string) {
+        let APP_ID = "application_id";
+        if (args.filter) {
+            args.filter = `(${args.filter}) and ${APP_ID} = '${appId}'`
+        }
+        else {
+            args.filter = `${APP_ID} = '${appId}'`
+        }
         let r = await DataHelper.list(conn.getRepository(PageRecord), { selectArguments: args });
         return r;
     }
 
     @action()
-    async add(@connection conn: Connection, @routeData { item }: { item: PageRecord }, @currentAppId appId) {
+    async add(@connection conn: Connection, @routeData { item }: { item: PageRecord }, @currentAppId appId: string) {
         if (item == null) throw errors.routeDataFieldNull("item");
         if (item.pageData == null) throw errors.argumentFieldNull("pageData", "item");
         if (item.name == null) throw errors.argumentFieldNull("name", "item");

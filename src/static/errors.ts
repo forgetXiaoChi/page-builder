@@ -38,6 +38,10 @@ class Errors extends BaseErrors {
         let msg = `${objectName} with id '${id}' is not exists.`;
         return new Error(msg);
     }
+    domainExists(domain: string) {
+        let msg = `Domain '${domain}' is exists.`;
+        return new Error(msg);
+    }
 }
 
 export let errors = new Errors();

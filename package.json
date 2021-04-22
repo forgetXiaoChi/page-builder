@@ -42,6 +42,7 @@
         "webpack-cli": "^3.3.11"
     },
     "dependencies": {
+        "bootstrap": "^3.4.1",
         "font-awesome": "^4.7.0",
         "js-md5": "^0.7.3",
         "maishu-admin-scaffold": "^1.7.0",
@@ -49,7 +50,7 @@
         "maishu-chitu-react": "^1.30.0",
         "maishu-chitu-scaffold": "^1.17.0",
         "maishu-chitu-service": "^1.30.0",
-        "maishu-data-page": "^1.0.8",
+        "maishu-data-page": "^1.0.11",
         "maishu-dilu": "^1.9.1",
         "maishu-dilu-react": "^1.2.0",
         "maishu-jueying": "^3.1.19",
@@ -61,10 +62,11 @@
         "maishu-router": "^1.2.1",
         "maishu-toolkit": "^1.6.6",
         "maishu-ui-toolkit": "^1.11.2",
-        "maishu-wuzhui": "^1.21.11",
+        "maishu-wuzhui": "^1.21.12",
         "maishu-wuzhui-helper": "^1.9.7",
         "node-html-parser": "^3.1.4",
-        "requirejs": "^2.3.6"
+        "requirejs": "^2.3.6",
+        "socket.io-client": "^4.0.1"
     },
     "files": [
         "dist",

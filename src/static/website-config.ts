@@ -12,15 +12,21 @@ let websiteConfig: MyWebsiteConfig = {
     //===================================================
     // 组件站点配置
     componentStations: {
-        // aixpi: `http://127.0.0.1:6739/aixpi`,
-        // flone: `http://127.0.0.1:6739/flone`,
-        aixpi: `http://192.168.2.14:6739/aixpi`,
-        flone: `http://192.168.2.14:6739/flone`,
+        aixpi: `http://127.0.0.1:6739/aixpi`,
+        flone: `http://127.0.0.1:6739/flone`,
+        // aixpi: `http://192.168.2.14:6739/aixpi`,
+        // flone: `http://192.168.2.14:6739/flone`,
     },
-    componentShare: "http://192.168.2.14:6739/share",
+    // componentShare: "http://192.168.2.14:6739/share",
+    componentShare: "http://127.0.0.1:6739/share",
     //===================================================
     requirejs: {
         context: "site",
+        shim: {
+            "node_modules/bootstrap/js/button": { deps: ["jquery"], exports: "jQuery" },
+            "node_modules/bootstrap/js/dropdown": { deps: ["jquery"], exports: "jQuery" },
+            "node_modules/bootstrap/dist/js/bootstrap": { deps: ["jquery"], exports: "jQuery" },
+        },
         paths: {
             "css": `${node_modules}/maishu-requirejs-plugins/src/css`,
             "json": `${node_modules}/maishu-requirejs-plugins/src/json`,
@@ -65,8 +71,11 @@ let websiteConfig: MyWebsiteConfig = {
         },
         {
             id: "FADCEEB3-145D-4131-BCB4-BFCF7D5FE167", name: "链接改写", path: "#url-rewrite", sortNumber: 30
-        }
+        },
+        {
+            id: "D0D26AA2-066F-478A-B19C-D8FB8F660905", name: "页面代码", path: "#html-snippet", sortNumber: 40
+        },
     ],
-    mode: "production",
+    mode: "development",
 };
 export default websiteConfig;

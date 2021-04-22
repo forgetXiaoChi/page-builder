@@ -7,6 +7,12 @@
         "declaration": true,
         "jsx": "react",
         "allowJs": false,
+        "baseUrl": "./",
+        "paths": {
+            "node_modules/*":[
+                "../node_modules/*"
+            ]
+        }
     },
     "exclude": [
         "sample-app",

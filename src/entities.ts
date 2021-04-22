@@ -90,3 +90,45 @@ export class UrlRewrite {
     @Column({ type: "char", length: 36 })
     applicationId: string;
 }
+
+/**
+ * HTML 片段，用于向 HTML 页面添加 HTML 代码片段
+ */
+@Entity("html-snippet")
+export class HtmlSnippet {
+
+    @PrimaryColumn({ type: "char", length: 36 })
+    id: string;
+
+    @Column({ type: "varchar", length: 50 })
+    url: string;
+
+    @Column({ type: "text" })
+    code: string;
+
+    @Column({ type: "varchar", length: 20 })
+    target: "head" | "body";
+
+    @Column({ type: "char", length: 36 })
+    applicationId: string;
+
+    @Column({ type: "date" })
+    createDateTime: Date;
+
+    @Column({
+        type: "bit", nullable: true,
+        transformer: {
+            to(value) {
+                return value == true ? 1 : 0;
+            },
+            from(value) {
+                if (Buffer.isBuffer(value))
+                    value = value[0];
+
+                return value == 1;
+            }
+        },
+    })
+    isRegex?: boolean;
+
+}
