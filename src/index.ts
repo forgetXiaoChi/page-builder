@@ -105,13 +105,13 @@ async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
     let nameRegex = new RegExp(pageNames.join("|"));
     let routers = [
         createRouter("/:id/?productId/*filePath", {
-            id: /[0-9A-Fa-f\-]{36}/,
-            productId: /[0-9A-Fa-f\-]{36}/,
+            id: /^[0-9A-Fa-f\-]{36}$/,
+            productId: /^[0-9A-Fa-f\-]{36}$/,
             filePath: /[0-9A-Za-z\-_\/\.]/,
         }),
         createRouter("/:name/:productId/*filePath", {
             name: /product/,
-            productId: /[0-9A-Fa-f\-]{36}/,
+            productId: /^[0-9A-Fa-f\-]{36}$/,
             filePath: /[0-9A-Za-z\-_\/\.]/,
         }),
         createRouter("/:name/:productName/*filePath", {
@@ -121,12 +121,12 @@ async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
         }),
         createRouter("/:name/:orderId/*filePath", {
             name: /checkout|order-detail|shipping|register/,
-            orderId: /[0-9A-Fa-f\-]{36}/,
+            orderId: /^[0-9A-Fa-f\-]{36}$/,
             filePath: /[0-9A-Za-z\-_\/\.]/,
         }),
         createRouter("/:name/:orderId/*filePath", {
             name: /receipt-edit/,
-            receiptId: /[0-9A-Fa-f\-]{36}/,
+            receiptId: /^[0-9A-Fa-f\-]{36}$/,
             filePath: /[0-9A-Za-z\-_\/\.]/,
         }),
         createRouter("/:name/*filePath", {
@@ -139,10 +139,12 @@ async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
     let m: { [key: string]: string } | null = null;
     if (rawUrl == "/")
         m = { name: "home" };
+    else if (pathname == "/")
+        m = {};
 
     if (m == null) {
         for (let i = 0; i < routers.length; i++) {
-            m = routers[i].match(rawUrl);
+            m = routers[i].match(pathname);
             if (m)
                 break;
         }

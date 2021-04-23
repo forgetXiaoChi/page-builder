@@ -4,6 +4,7 @@ import { WebsiteConfig } from "maishu-admin-scaffold/static/website-config";
 type MyWebsiteConfig = WebsiteConfig & {
     componentStations: { aixpi: string, flone: string },
     componentShare: string,
+    storeUrl: string,
 };
 
 export let libVirtualPath = "lib";
@@ -12,14 +13,15 @@ let websiteConfig: MyWebsiteConfig = {
     //===================================================
     // 组件站点配置
     componentStations: {
-        aixpi: `http://127.0.0.1:6739/aixpi`,
-        flone: `http://127.0.0.1:6739/flone`,
-        // aixpi: `http://192.168.2.14:6739/aixpi`,
-        // flone: `http://192.168.2.14:6739/flone`,
+        // aixpi: `http://127.0.0.1:6739/aixpi`,
+        // flone: `http://127.0.0.1:6739/flone`,
+        aixpi: `http://192.168.2.14:6739/aixpi`,
+        flone: `http://192.168.2.14:6739/flone`,
     },
-    // componentShare: "http://192.168.2.14:6739/share",
-    componentShare: "http://127.0.0.1:6739/share",
+    componentShare: "http://192.168.2.14:6739/share",
+    // componentShare: "http://127.0.0.1:6739/share",
     //===================================================
+    storeUrl: "http://192.168.2.195:5218/",
     requirejs: {
         context: "site",
         shim: {

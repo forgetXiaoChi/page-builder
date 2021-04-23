@@ -14,6 +14,7 @@ import * as ui from "maishu-ui-toolkit";
 import { ComponentInfo } from "../model";
 import { guid } from "maishu-toolkit";
 import { ComponentLoader } from "../controls/component-loader";
+import websiteConfig from "website-config";
 
 import "./content/pc-page-edit.less";
 
@@ -274,6 +275,13 @@ export default class PCPageEdit extends React.Component<Props, State> {
         });
     }
 
+    preview(pageRecord: PageRecord) {
+        // let url = LocalService.url("preview.html");
+        // window.open(`${url}?id=${pageRecord.id}&application-id=${localStorage.getItem("application-id")}`);
+        let url = `${websiteConfig.storeUrl}?id=${pageRecord.id}&application-id=${localStorage.getItem("application-id")}`;
+        window.open(url);
+    }
+
     render() {
         let { pageRecord, templateList } = this.state;
         // let pageData = pageRecord?.pageData;
@@ -307,7 +315,7 @@ export default class PCPageEdit extends React.Component<Props, State> {
                     </li>
                     <li className="pull-right">
                         <button className="btn btn-sm btn-primary"
-                            onClick={() => window.open(`preview.html#page?id=${pageRecord.id}`)}>
+                            onClick={() => this.preview(pageRecord)}>
                             <i className="fa fa-eye"></i><span>预览</span>
                         </button>
                     </li>
