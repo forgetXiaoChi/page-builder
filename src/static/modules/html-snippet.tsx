@@ -7,7 +7,8 @@ import { HtmlSnippet } from "../../entities";
 import { dataSources } from "../services";
 import { PageProps } from "maishu-chitu-react";
 import ReactDOM = require("react-dom");
-import { showDialog } from "maishu-ui-toolkit";
+import { hideDialog, showDialog } from "maishu-ui-toolkit";
+import { FormValidator } from "maishu-dilu-react";
 
 interface State extends DataListPageState {
     quickAddShown: boolean,
@@ -102,18 +103,28 @@ export default class HtmlSnippetPage extends DataListPage<HtmlSnippet, PageProps
                     }
                 }
             }
+        }),
+        this.boundField({
+            dataField: "replacement",
+            headerText: "替换",
+            itemStyle: { width: "200px" },
+            emptyText: "请输入要替换的元素，使用 CSS 选择器"
         })
 
     ];
 
     showKeywordsDialog() {
-        showDialog(keywordsDialogElement);
+        KeywordsDialog.show();
         this.setState({ quickAddShown: false });
     }
 
     showDescriptionDialog() {
         showDialog(descriptionDialogElement);
         this.setState({ quickAddShown: false });
+    }
+
+    showTitleDialog() {
+
     }
 
     renderToolbarRight() {
@@ -133,6 +144,7 @@ export default class HtmlSnippetPage extends DataListPage<HtmlSnippet, PageProps
                 <ul className="dropdown-menu" style={{ display: quickAddShown ? "inherit" : "none" }}>
                     <li><a href="script:" onClick={() => this.showKeywordsDialog()}>关键词</a></li>
                     <li><a href="script:" onClick={() => this.showDescriptionDialog()}>描述</a></li>
+                    <li><a href="script:" onClick={() => this.showTitleDialog()}>标题</a></li>
                 </ul>
             </div>,
             ...super.renderToolbarRight(),
@@ -140,8 +152,52 @@ export default class HtmlSnippetPage extends DataListPage<HtmlSnippet, PageProps
     }
 }
 
-class KeywordsDialog extends React.Component {
+class KeywordsDialog extends React.Component<{}, { url?: string, keywords?: string }> {
+
+    private static validator: FormValidator = new FormValidator();
+    private static keywordsDialogElement: HTMLElement;
+
+    constructor(props: KeywordsDialog["props"]) {
+        super(props);
+
+        this.state = {};
+    }
+
+    private static async addKeywords(instance: KeywordsDialog) {
+        let { url, keywords } = instance.state;
+        if (!this.validator.check())
+            return;
+
+        let item: HtmlSnippet = {
+            url: url,
+            code: `<meta name="keywords" content="${keywords}">`,
+            target: "head",
+        } as HtmlSnippet;
+
+        await dataSources.htmlSnippet.insert(item);
+        hideDialog(KeywordsDialog.keywordsDialogElement);
+        instance.setState({ url: "", keywords: "" });
+    }
+
+    static show() {
+        this.validator.clearErrors();
+        if (!this.keywordsDialogElement) {
+            this.keywordsDialogElement = document.createElement("div");
+            this.keywordsDialogElement.className = "modal fade";
+            ReactDOM.render(<KeywordsDialog />, this.keywordsDialogElement);
+            document.body.appendChild(this.keywordsDialogElement);
+        }
+
+        showDialog(this.keywordsDialogElement);
+    }
+
+    static hide() {
+        hideDialog(this.keywordsDialogElement)
+    }
+
     render() {
+        let { url, keywords } = this.state;
+        let validator = KeywordsDialog.validator;
         return <div className="modal-dialog">
             <div className="modal-content">
                 <div className="modal-header">
@@ -152,22 +208,32 @@ class KeywordsDialog extends React.Component {
                     <div className="form-group clearfix input-control">
                         <label>链接</label>
                         <span>
-                            <input className="form-control" name="url" placeholder="请输入页面链接（支持正则表达式）" />
+                            <input className="form-control" name="url" placeholder="请输入页面链接（支持正则表达式）"
+                                onChange={e => {
+                                    this.setState({ url: e.target.value })
+                                }} />
+                            {validator.field(url, [rules.required("请输入页面链接")])}
                         </span>
                     </div>
                     <div className="form-group clearfix input-control">
                         <label>关键词</label>
                         <span>
-                            <textarea className="form-control" placeholder="请输入关键词" />
+                            <textarea className="form-control" placeholder="请输入关键词，多个关键词请用 , 隔开"
+                                onChange={e => {
+                                    this.setState({ keywords: e.target.value });
+                                }} />
+                            {validator.field(keywords, [rules.required("请输入关键词")])}
                         </span>
                     </div>
                 </div>
                 <div className="modal-footer">
-                    <button type="button" className="btn btn-default">
+                    <button type="button" className="btn btn-default"
+                        onClick={() => KeywordsDialog.hide()}>
                         <i className="fa fa-reply" />
                         <span>取消</span>
                     </button>
-                    <button type="button" className="btn btn-primary">
+                    <button type="button" className="btn btn-primary"
+                        onClick={() => KeywordsDialog.addKeywords(this)}>
                         <i className="fa fa-save" />
                         <span>确定</span>
                     </button>
@@ -197,11 +263,20 @@ class DescriptionDialog extends React.Component {
     }
 }
 
-let keywordsDialogElement = document.createElement("div");
-keywordsDialogElement.className = "modal fade";
-document.body.appendChild(keywordsDialogElement);
+class TitleDialog extends React.Component {
+    constructor(props) {
+        super(props);
+    }
 
-ReactDOM.render(<KeywordsDialog />, keywordsDialogElement);
+    render() {
+        return <>
+
+        </>
+    }
+}
+
+
+
 
 let descriptionDialogElement = document.createElement("div");
 descriptionDialogElement.className = "modal fade";

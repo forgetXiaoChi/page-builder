@@ -37,8 +37,9 @@ export class HtmlSnippetController {
         let repository = conn.getRepository(HtmlSnippet);
         await repository.insert(d.item);
 
-        let r: Pick<HtmlSnippet, "id" | "createDateTime"> = {
-            id: d.item.id, createDateTime: d.item.createDateTime
+        let r: Pick<HtmlSnippet, "id" | "createDateTime" | "applicationId"> = {
+            id: d.item.id, createDateTime: d.item.createDateTime,
+            applicationId: d.item.applicationId
         };
 
         return r;

@@ -27,6 +27,12 @@ export class StoreHtmlTransform implements ContentTransform {
             htmlElement.appendChild(headElement);
         }
 
+        let bodyElement = htmlElement.querySelector("body");
+        if (bodyElement == null) {
+            bodyElement = new HTMLParser.HTMLElement("body", {}, "", null);
+            htmlElement.appendChild(bodyElement);
+        }
+
         let script = new HTMLParser.HTMLElement("script", {}, "", null);
         headElement.appendChild(script);
 
@@ -62,9 +68,24 @@ export class StoreHtmlTransform implements ContentTransform {
             let url = context.req.url || "";
             if ((htmlSnippets[i].isRegex && new RegExp(htmlSnippets[i].url).test(url)) ||
                 (htmlSnippets[i].isRegex != true && htmlSnippets[i].url == url)) {
+
+                let containerElement: HTMLParser.HTMLElement;
                 if (htmlSnippets[i].target == "head") {
-                    headElement.appendChild(HTMLParser.parse(htmlSnippets[i].code));
+                    containerElement = headElement;
                 }
+                else if (htmlSnippets[i].target == "body") {
+                    containerElement = bodyElement;
+                }
+                else {
+                    throw new Error(`Target '${htmlSnippets[i].target}' is not supported.`);
+                }
+
+                if (htmlSnippets[i].replacement) {
+                    let nodes = containerElement.querySelectorAll(htmlSnippets[i].replacement);
+                    nodes.forEach(n => n.remove());
+                }
+
+                containerElement.appendChild(HTMLParser.parse(htmlSnippets[i].code));
             }
         }
         //=========================================================================================

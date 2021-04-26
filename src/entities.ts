@@ -115,6 +115,10 @@ export class HtmlSnippet {
     @Column({ type: "date" })
     createDateTime: Date;
 
+    /** 替换，css 选择器 */
+    @Column({ type: "varchar", length: 50, nullable: true })
+    replacement?: string;
+
     @Column({
         type: "bit", nullable: true,
         transformer: {
