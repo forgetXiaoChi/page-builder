@@ -33,13 +33,12 @@ export class HomeController {
         let storeInfos = conn.getRepository(StoreInfo);
         let storeInfo = await storeInfos.findOne(appId);
         if (storeInfo == null) {
-            storeInfo = { id: appId, theme: d.themeName };
-            await storeInfos.insert(storeInfo);
-        }
-        else {
-            await storeInfos.update(appId, { theme: d.themeName });
+            // storeInfo = { id: appId, theme: d.themeName };
+            // await storeInfos.insert(storeInfo);
+            throw errors.objectNotExists("StoreInfo", appId);
         }
 
+        await storeInfos.update(appId, { theme: d.themeName });
         return { id: storeInfo.id };
     }
 
@@ -68,8 +67,9 @@ export class HomeController {
         let storeInfos = conn.getRepository(StoreInfo);
         let storeInfo = await storeInfos.findOne(appId);
         if (storeInfo == null) {
-            storeInfo = { id: appId, theme: DefaultTheme };
-            storeInfos.insert(storeInfo);
+            // storeInfo = { id: appId, theme: DefaultTheme };
+            // storeInfos.insert(storeInfo);
+            throw errors.objectNotExists("StoreInfo", appId);
         }
 
         return storeInfo;

@@ -27,7 +27,7 @@ export class PageRecord {
     @Column({ name: "template_id", type: "varchar", length: 36, nullable: true })
     templateId?: string;
 
-    @Column({ name: "theme_name", type: "varchar", length: 40 })
+    @Column({ name: "theme_name", type: "varchar", length: 40, nullable: true })
     themeName: string;
 
     @Column({ type: "varchar", length: 100, nullable: true })
@@ -57,6 +57,9 @@ export class StoreInfo {
 
     @Column({ type: "varchar", length: 50 })
     theme: string;
+
+    @Column({ type: "char", length: 36 })
+    userId: string;
 }
 
 @Entity("store_domain")
@@ -74,7 +77,7 @@ export class StoreDomain {
     createDateTime: Date;
 }
 
-@Entity("url-rewrite")
+@Entity("url_rewrite")
 export class UrlRewrite {
     @PrimaryColumn({ type: "char", length: 36 })
     id: string;
@@ -95,7 +98,7 @@ export class UrlRewrite {
 /**
  * HTML 片段，用于向 HTML 页面添加 HTML 代码片段
  */
-@Entity("html-snippet")
+@Entity("html_snippet")
 export class HtmlSnippet {
 
     @PrimaryColumn({ type: "char", length: 36 })

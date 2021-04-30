@@ -5,7 +5,6 @@ import { ConnectionOptions, createConnection } from "maishu-node-data";
 import websiteConfig from "./static/website-config";
 import { sourceVirtualPaths } from "maishu-chitu-scaffold";
 import { getDomain, StoreHtmlTransform } from "./content-transforms/html-transform";
-import { createRouter } from "maishu-router";
 import { pathConcat } from "maishu-toolkit";
 import * as querystring from "querystring";
 import { getMyConnection } from "./decoders";

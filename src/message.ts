@@ -1,8 +1,9 @@
 import { config } from "./config";
 import { io, ManagerOptions } from "socket.io-client";
 import { getMyConnection } from "./decoders";
-import { PageRecord } from "./entities";
+import { PageRecord, StoreDomain, StoreInfo } from "./entities";
 import { guid } from "maishu-toolkit";
+import { Connection } from "typeorm";
 
 interface MerchantAuditSuccessMessage {
     merchant: {
@@ -35,6 +36,11 @@ export function startMessage(messageHost: string,) {
         let conn = await getMyConnection();
         let pageRecords = conn.getRepository(PageRecord);
 
+        await createStoreInfo(conn, msg);
+        await createStoreDomain(conn, msg.user.data.applicationId);
+
+        //=====================================================================================================
+        // 导入页面
         let existsPageRecords = await pageRecords.find({ applicationId: msg.user.data.applicationId });
         let defaultPageRecords = await pageRecords.find({ applicationId: config.zwAppId });
         let toInsert: PageRecord[] = [];
@@ -52,8 +58,51 @@ export function startMessage(messageHost: string,) {
         })
 
         await pageRecords.insert(toInsert);
+        //=====================================================================================================
 
     });
 
 }
 
+/** 随机生成子一个域名， 并绑定*/
+async function createStoreDomain(conn: Connection, appId: string) {
+    let storeDomains = conn.getRepository(StoreDomain);
+
+    let item: StoreDomain;
+    let subDomain: string;
+    do {
+        let name = randomDomainName();
+        subDomain = name + "." + config.mainDomain;
+        item = await storeDomains.findOne({ domain: subDomain });
+    } while (item != null)
+
+    await storeDomains.insert({
+        id: guid(), createDateTime: new Date(),
+        domain: subDomain, applicationId: appId
+    })
+}
+
+export function randomDomainName() {
+    let length = 6;
+    let aCode = 'a'.charCodeAt(0);
+    let zCode = 'z'.charCodeAt(0);
+    let arr: number[] = []
+    for (let i = 0; i < length; i++) {
+        let num = Math.fround(Math.random() * (zCode - aCode)) + aCode;
+        arr[i] = num;
+    }
+
+    let name = String.fromCharCode(...arr);
+    return name;
+}
+
+export async function createStoreInfo(conn: Connection, msg: MerchantAuditSuccessMessage) {
+
+    let storeInfos = conn.getRepository(StoreInfo);
+    let item: StoreInfo = {
+        id: msg.user.data.applicationId, theme: "aixpi", userId: msg.user.id
+    };
+
+    await storeInfos.insert(item);
+    return item;
+}
