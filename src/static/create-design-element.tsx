@@ -30,3 +30,7 @@ export let createDesignElement = function (type: any, props?: any, ...children: 
     return React.createElement(type, props, ...children);
 };
 (window as any)[CreateDesignElement] = createDesignElement;
+
+window["createRuntimeElement"] = function (type: any, props?: any, ...children: any[]) {
+    return React.createElement(type, props, ...children);
+};

@@ -111,18 +111,6 @@ window["createRuntimeElement"] = function (type: any, props?: any, ...children: 
             } as React.MouseEventHandler<HTMLAnchorElement>;
         }
 
-        // let ref = props.ref as Function;
-        // props.ref = function (e: HTMLElement) {
-        //     if (e != null && e.onclick != null) {
-        //         e.onclick = function () {
-        //             console.warn("onclick event is disabled.")
-        //         }
-        //     }
-
-        //     if (ref != null)
-        //         ref.apply(this, [e]);
-        // }
-
     }
 
 
