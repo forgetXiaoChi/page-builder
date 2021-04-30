@@ -42,6 +42,10 @@ class Errors extends BaseErrors {
         let msg = `Domain '${domain}' is exists.`;
         return new Error(msg);
     }
+    componentsConfigNull() {
+        let msg = `Components of website config is null.`;
+        return new Error(msg);
+    }
 }
 
 export let errors = new Errors();

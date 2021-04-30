@@ -1,3 +1,4 @@
+import { PageData } from "maishu-jueying-core";
 import { Entity, Column, PrimaryColumn, Connection } from "maishu-node-data";
 
 @Entity("page_data_record")
@@ -9,7 +10,7 @@ export class PageRecord {
     name: string;
 
     @Column({ name: "page_data", type: "json", })
-    pageData: any;
+    pageData: PageData;
 
     @Column({ name: "create_date_time", type: "datetime" })
     createDateTime: Date;

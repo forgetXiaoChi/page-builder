@@ -1,10 +1,11 @@
 import { Callbacks, Service, ValueStore } from "maishu-chitu-service";
 import { DataSourceSelectArguments, DataSourceSelectResult } from "maishu-wuzhui-helper";
 import { HtmlSnippet, PageRecord, StoreDomain, UrlRewrite } from "../../entities";
-import { errors, pathConcat } from "maishu-toolkit";
+import { pathConcat } from "maishu-toolkit";
 import { ComponentInfo } from "../model";
 import websiteConfig from "../website-config";
 import { errorHandle } from "../error-handle";
+import { errors } from "../errors";
 
 
 Service.headers["application-id"] = getApplicationId()
@@ -221,6 +222,9 @@ export class LocalService {
         this._componentStationConfig = await this.loadJS(url);
 
         let _componentInfos = this._componentStationConfig.components;
+        if (!_componentInfos)
+            throw errors.componentsConfigNull();
+
         if ((_componentInfos as any)["pathContacted"] == undefined) {
             (_componentInfos as any)["pathContacted"] = true;
             _componentInfos.forEach(o => {
@@ -234,8 +238,12 @@ export class LocalService {
                 if (o.editor != null)
                     o.editor = pathConcat(themenName, o.editor);
 
-                if (o.design != null)
+                if (o.design != null) {
                     o.design = pathConcat(themenName, o.design);
+                    if (times == "designtime") {
+                        o.design = o.design + ".des";
+                    }
+                }
 
                 if (o.layout != null)
                     o.layout = pathConcat(themenName, o.layout);

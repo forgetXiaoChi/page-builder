@@ -2,13 +2,12 @@
 import { Application } from "maishu-chitu-react";
 import w from "../website-config";
 import { LocalService } from "../services";
-import { FooterComponentData, HeaderComponentData, PageHelper } from "../controls/page-helper";
+import { PageHelper } from "../controls/page-helper";
 import { PageData } from "maishu-jueying-core";
+import React = require("react");
 import { createRouter } from "maishu-router";
-
-let routers = [
-    createRouter("/:id/:productId", { productId: /[0-9A-Fa-f\-]{36}/ })
-]
+import { routers } from "../routers";
+import { errors } from "static/errors";
 
 type WebsiteConfig = typeof w;
 
@@ -33,6 +32,11 @@ class MyApplication extends Application {
                     // createStyleElement(elementId, header, footer);
                 })
         })
+
+        window.onpopstate = (event: PopStateEvent) => {
+            // alert(`location: ${document.location}, state: ${JSON.stringify(event.state)}`)
+            this.showPage(document.location.href);
+        }
     }
 
     async loadjs(path: string) {
@@ -49,39 +53,78 @@ class MyApplication extends Application {
         });
     }
 
-    run() {
-        let url: string = window["actualUrl"] || location.href;
-        let queryIndex = url.indexOf("?");
-        let query = url.substr(queryIndex);
-        this.showPage("page" + query);
+    parseUrl(url: string) {
+
+        let a = document.createElement("a");
+        a.href = url;
+
+        let m: { [name: string]: string } | null = null;
+        let values: any = {};
+        for (let i = 0; i < routers.length; i++) {
+            m = routers[i].match(a.pathname);
+            if (m) {
+                values = Object.assign({}, m);
+                if (a.search && a.search.length > 1) {
+                    let query = this.pareeUrlQuery(a.search.substr(1));
+                    Object.assign(values, query)
+                }
+
+                break;
+            }
+        }
+        if (m == null)
+            throw new Error("Parse url fail.");
+
+        return { pageName: "page", values };
     }
+
+    // run() {
+    //     let url: string = window["actualUrl"] || location.href;
+    //     let queryIndex = url.indexOf("?");
+    //     let query = url.substr(queryIndex);
+    //     this.showPage("page" + query);
+    // }
 
 }
 
-function createStyleElement(elementId: string, header: HeaderComponentData, footer: FooterComponentData) {
-    if (!document.getElementById(elementId) && document.head != null) {
-        let element = document.createElement('style');
-        element.type = 'text/css';
-        element.id = elementId;
-        document.head.appendChild(element);
-        if (header?.props?.height) {
-            element.innerHTML = element.innerHTML + `
-    #${elementId} .body {
-        padding-top: ${header?.props?.height ? header.props.height + "px" : 'unset'}
-    }`
-        }
-
-        if (footer?.props?.height) {
-            element.innerHTML = element.innerHTML + `
-    #${elementId} .body {
-        padding-bottom: ${footer?.props?.height ? footer.props.height + "px" : 'unset'}
-    }`
-        }
-    }
-
-}
 
 export function run(config: any, req) {
     window["app"] = window["app"] || new MyApplication(config, req)
     return window["app"];
 }
+
+
+window["createRuntimeElement"] = function (type: any, props?: any, ...children: any[]) {
+    if (type == "a") {
+        props = props || {};
+
+        let app = window["app"] as MyApplication;
+
+        if (props.href) {
+            let href = props.href;
+            delete props.href;
+            props.onClick = function (e) {
+                e.preventDefault();
+                window.history.pushState({}, "", href);
+                app.showPage(href);
+
+            } as React.MouseEventHandler<HTMLAnchorElement>;
+        }
+
+        // let ref = props.ref as Function;
+        // props.ref = function (e: HTMLElement) {
+        //     if (e != null && e.onclick != null) {
+        //         e.onclick = function () {
+        //             console.warn("onclick event is disabled.")
+        //         }
+        //     }
+
+        //     if (ref != null)
+        //         ref.apply(this, [e]);
+        // }
+
+    }
+
+
+    return React.createElement(type, props, ...children);
+};

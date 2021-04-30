@@ -17,6 +17,7 @@ import { ComponentLoader } from "../controls/component-loader";
 import websiteConfig from "website-config";
 
 import "./content/pc-page-edit.less";
+import "../create-design-element";
 
 interface State {
     pageRecord?: PageRecord,

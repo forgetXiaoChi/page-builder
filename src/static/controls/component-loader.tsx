@@ -5,6 +5,7 @@ import { LocalService } from "../services";
 import * as React from "react";
 import { guid } from "maishu-toolkit";
 import { Callback } from "maishu-toolkit";
+import strings from "../strings";
 
 let localRequirejs = require as any as typeof requirejs;
 
@@ -133,7 +134,7 @@ async function loadComponentType(typeName: string, isDesignMode: boolean) {
     let componentInfo = componentInfos.filter(o => o.type == typeName)[0];
     if (componentInfo == null) {
         let error = errors.canntFindComponentInfo(typeName);;
-        let componentType = CreateInfoComponent(error.message);
+        let componentType = createInfoComponent(error.message);
         return { componentType, componentInfo };
 
     }
@@ -146,12 +147,16 @@ async function loadComponentType(typeName: string, isDesignMode: boolean) {
             if (compoenntType == null)
                 throw errors.moduleNotExport(path, typeName);
 
+            if (typeof compoenntType["loadData"] == "function") {
+                compoenntType = createComponent(compoenntType["loadData"], compoenntType)
+            }
+
             componentTypes[typeName] = compoenntType;
             resolve(compoenntType);
 
         }, err => {
             let text = typeof err == "string" ? err : err.message;
-            let componentType = CreateInfoComponent(text);
+            let componentType = createInfoComponent(text);
             // return { componentType, componentInfo };
             // reject(err);
             console.error(err);
@@ -172,8 +177,7 @@ async function loadComponentEditor(componentInfo: ComponentInfo): Promise<any> {
             resolve(mod);
         }, err => {
             let text = typeof err == "string" ? err : err.message;
-            let componentType = CreateInfoComponent(text);
-            // reject(err);
+            let componentType = createInfoComponent(text);
             resolve(componentType);
         })
 
@@ -221,12 +225,37 @@ export function createComponentLoadFail(error: any, reload: () => void) {
 
 }
 
-export function CreateInfoComponent(text: string) {
+export function createInfoComponent(text: string) {
     return class InfoComponent extends React.Component {
         render() {
             return <div className="text-center" style={{ paddingTop: 20, paddingBottom: 20 }}>
                 {text}
             </div>
+        }
+    }
+
+}
+
+export function createComponent(loadData: (props: any) => Promise<any>, originalCompoenntType) {
+
+    return class extends React.Component<any, { data?: any }> {
+        constructor(props: any) {
+            super(props);
+
+            this.state = {};
+            loadData(props).then(data => {
+                this.setState({ data });
+            })
+        }
+
+        render() {
+            let { data } = this.state;
+            if (data === undefined)
+                return <div className="empty">{strings.dataLoading}</div>
+
+            let props = Object.assign({}, this.props, { data });
+            let e = React.createElement(originalCompoenntType, props);
+            return e;
         }
     }
 

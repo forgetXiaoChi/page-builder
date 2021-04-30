@@ -4,6 +4,7 @@ import { PageData, Page } from "maishu-jueying-core";
 import { LocalService } from "../services";
 import { ComponentLoader } from "../controls/component-loader"
 import { PageHelper } from "../controls/page-helper";
+import { PageRecord } from "entities";
 
 interface State {
     pageData?: PageData
@@ -11,7 +12,8 @@ interface State {
 
 interface Props {
     data: {
-        id: string
+        id?: string,
+        name?: string,
     }
 }
 
@@ -22,16 +24,20 @@ export default class PageView extends React.Component<Props, State> {
 
         this.state = { pageData: this.emptyPageData() };
         this.localService = new LocalService();
-        this.localService.getPageRecord(this.props.data.id as string)
-            .then(async r => {
-                if (!r?.templateId) {
-                    return r;
-                }
 
-                let template = await this.localService.getPageRecord(r.templateId);
-                PageHelper.mergeTemplate(r.pageData, template.pageData);
+        let p: Promise<PageRecord> = this.props.data.id ?
+            this.localService.getPageRecord(this.props.data.id) :
+            this.localService.getPageDataByName(this.props.data.name);
+
+        p.then(async r => {
+            if (!r?.templateId) {
                 return r;
-            })
+            }
+
+            let template = await this.localService.getPageRecord(r.templateId);
+            PageHelper.mergeTemplate(r.pageData, template.pageData);
+            return r;
+        })
             .then(r => {
                 if (r == null) {
                     this.setState({ pageData: null })
