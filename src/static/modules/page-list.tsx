@@ -4,16 +4,16 @@ import * as React from "react";
 import { boundField, createGridView, customDataField, dateTimeField, GridView } from "maishu-wuzhui-helper";
 import * as ReactDOM from "react-dom";
 import { LocalService } from "../services/local-service";
-import { data } from "jquery";
 import { buttonOnClick, hideDialog, showDialog } from "maishu-ui-toolkit";
 import strings from "../strings";
 import { FormValidator, rules } from "maishu-dilu-react";
 import { PageHelper } from "../controls/page-helper";
 
 interface State {
-    item: Partial<PageRecord>
+    item: Partial<PageRecord>,
+    templates?: PageRecord[],
 }
-let themes = ["aixpi", "flone"]
+let themes = ["aixpi", "flone", "generic"]
 let localService = new LocalService();
 
 export default class PageListPage extends React.Component<{}, State> {
@@ -36,13 +36,18 @@ export default class PageListPage extends React.Component<{}, State> {
                 boundField<PageRecord>({ dataField: "name", headerText: "名称" }),
                 boundField<PageRecord>({ dataField: "remark", headerText: "备注" }),
                 boundField<PageRecord>({ dataField: "themeName", headerText: "主题", sortExpression: "themeName" }),
+                boundField<PageRecord>({ dataField: "templateName", headerText: "模板", sortExpression: "templateName" }),
                 dateTimeField<PageRecord>({ dataField: "createDateTime", headerText: "创建时间" }),
                 customDataField<PageRecord>({
                     headerText: "操作",
-                    itemStyle: { textAlign: "center", width: "120px" },
+                    itemStyle: { textAlign: "center", width: "150px" },
                     render: (dataItem, cellElement) => {
                         ReactDOM.render(<>
-                            <button key="btnAdd" className="btn btn-info btn-minier"
+                            <button key="btnModify" className="btn btn-purple btn-minier"
+                                onClick={() => location.href = this.editUrl(dataItem.themeName, dataItem.name)}>
+                                装修页面
+                            </button>
+                            <button key="btnEdit" className="btn btn-info btn-minier"
                                 onClick={() => location.href = this.editUrl(dataItem.themeName, dataItem.name)}>
                                 <i className="fa fa-pencil"></i>
                             </button>
@@ -59,9 +64,9 @@ export default class PageListPage extends React.Component<{}, State> {
             ]
         })
     }
-    editUrl(themeName: string, name: string) {//  `#/${LocalService.url(`${dataItem.themeName}-page-edit`)}`
+    editUrl(themeName: string, name: string) {
         if (!themeName)
-            return `#/${LocalService.url(`pc-page-edit?name=${name}`)}`;
+            return `#/${LocalService.url(`generic-page-edit?name=${name}`)}`;
 
         return `#/${LocalService.url(`${themeName}-page-edit?name=${name}`)}`;
     }
@@ -79,16 +84,24 @@ export default class PageListPage extends React.Component<{}, State> {
         let item = this.state.item;
         item.pageData = PageHelper.emptyPageData();
         item.type = "page";
-        // let item = await this.gridView.dataSource.insert({
-        //     name: this.state.item.name, pageData: PageHelper.emptyPageData(),
-        //     type: "page",
-        // } as PageRecord);
+
         await this.gridView.dataSource.insert(item as PageRecord);
         hideDialog(this.dialogElement);
-        this.setState({ item: {} });
+        setTimeout(() => {
+            this.setState({ item: {} });
+        }, 1000)
+    }
+    componentDidMount() {
+        localService.templateList().then(items => {
+            this.setState({ templates: items });
+        })
     }
     render() {
-        let { item } = this.state;
+        let { item, templates } = this.state;
+        if (templates == null) {
+            return <div>{strings.dataLoading}</div>
+        }
+
         return <div>
             <ul className="nav nav-tabs">
                 <li className="pull-right">
@@ -113,7 +126,7 @@ export default class PageListPage extends React.Component<{}, State> {
                                 <div className="form-group clearfix input-control">
                                     <label>{strings.pageList.name}</label>
                                     <span>
-                                        <input className="form-control" name="name"
+                                        <input className="form-control"
                                             value={item.name || ""}
                                             onChange={e => {
                                                 item.name = e.target.value;
@@ -125,16 +138,33 @@ export default class PageListPage extends React.Component<{}, State> {
                                 <div className="form-group clearfix input-control">
                                     <label>{strings.pageList.theme}</label>
                                     <span>
-                                        <select className="form-control" name="name"
+                                        <select className="form-control"
                                             value={item.themeName || ""}
                                             onChange={e => {
                                                 item.themeName = e.target.value;
                                                 this.setState({ item })
                                             }}>
-                                            <option>请选择主题</option>
-                                            {themes.map(t => <option value={t}>{t}</option>)}
+                                            <option value="">{strings.pageList.selectTheme}</option>
+                                            {themes.map(t => <option key={t} value={t}>{t}</option>)}
                                         </select>
-                                        {this.validator.field(item.themeName, [rules.required(strings.pageList.selectTheme)])}
+                                        {/* {this.validator.field(item.themeName, [rules.required(strings.pageList.selectTheme)])} */}
+                                    </span>
+                                </div>
+                                <div className="form-group clearfix input-control">
+                                    <label>
+                                        {strings.pageList.template}
+                                    </label>
+                                    <span>
+                                        <select className="form-control" value={item.templateName || ""}
+                                            onChange={e => {
+                                                item.templateName = e.target.value;
+                                                this.setState({ item });
+                                            }}>
+                                            <option value="">{strings.pageList.selectTemplate}</option>
+                                            {templates.map(t =>
+                                                <option key={t.id} value={t.name}>{t.displayName || t.name}</option>
+                                            )}
+                                        </select>
                                     </span>
                                 </div>
                             </div>

@@ -1,7 +1,7 @@
 import { PageDesigner, DesignerContext } from "maishu-jueying";
-import { ComponentData, parseComponentData } from "maishu-jueying-core";
+import { ComponentData, PageData, parseComponentData } from "maishu-jueying-core";
 import { guid } from "maishu-toolkit";
-import { DesignPageContext } from "./design-page";
+import { DesignPageContext, ContextArguments } from "./design-page";
 import { ComponentContainer as BaseComponentContainer, ComponentContainerProps as BaseComponentContainerProps } from "maishu-jueying-core";
 import * as React from "react";
 
@@ -9,8 +9,10 @@ export type ComponentContainerProps = BaseComponentContainerProps & {
     enable?: boolean
 }
 
+let DataColumn = "data-column";
+
 export class ComponentContainer extends BaseComponentContainer<ComponentContainerProps> {
-    private container: HTMLElement;
+    private containers: HTMLElement[] = [];
 
     constructor(props) {
         super(props);
@@ -19,6 +21,7 @@ export class ComponentContainer extends BaseComponentContainer<ComponentContaine
     private enableDrapDrop(containerElement: HTMLElement, designer: PageDesigner) {
         let pageData = designer.pageData;
         console.assert(containerElement != null);
+        let column = containerElement.getAttribute(DataColumn);
         $(containerElement).sortable({
             axis: "y",
             stop: () => {
@@ -40,8 +43,11 @@ export class ComponentContainer extends BaseComponentContainer<ComponentContaine
 
                     let child = pageData.children.filter((o: ComponentData) => o.id == childId)[0] as ComponentData;
                     console.assert(child != null);
+                    let props = child.props || {};
+                    props.column = props.column || "0";
+                    if (props.column == column)
+                        childComponentDatas.push(child);
 
-                    childComponentDatas.push(child);
                 }
 
                 let childIds = childComponentDatas.map(o => o.id);
@@ -52,11 +58,13 @@ export class ComponentContainer extends BaseComponentContainer<ComponentContaine
 
             },
             receive: (event, ui) => {
+                let column = event.target.getAttribute(DataColumn);
                 let componentData: ComponentData = JSON.parse(ui.helper.attr("component-data"));
                 componentData.id = componentData.id || guid();
                 componentData.parentId = this.props.id;
                 componentData.props = {
                     // id: componentData.id,
+                    column
                 }
                 let elementIndex: number = 0;
                 ui.helper.parent().children().each((index, element) => {
@@ -90,55 +98,80 @@ export class ComponentContainer extends BaseComponentContainer<ComponentContaine
         })
     }
     disable() {
-        $(this.container).sortable("disable");
-        $(this.container).find("li").attr("contentEditable", "true");
-        $(this.container).find("li").css("cursor", "default");
+        this.containers.forEach(c => {
+            $(c).sortable("disable");
+            $(c).find("li").attr("contentEditable", "true");
+            $(c).find("li").css("cursor", "default");
+        })
     }
     enable() {
-        $(this.container).sortable("options", "disable", false);
-        $(this.container).find("li").attr("contentEditable", "false");
-        $(this.container).find("li").css("cursor", "move");
+        this.containers.forEach(c => {
+            $(c).sortable("options", "disable", false);
+            $(c).find("li").attr("contentEditable", "false");
+            $(c).find("li").css("cursor", "move");
+        })
     }
     componentDidMount() {
+
     }
+
+    createContainer(args: ContextArguments, column: string) {
+
+        let pageData = args.pageData;
+        if (pageData == null)
+            return null;
+
+        pageData.children.forEach(c => {
+            c.props = c.props || {};
+            c.props.column = c.props.column || "0";
+        })
+
+        let children = pageData.children.filter(o => typeof o != "string" && o.parentId == this.props.id && o.props.column == column) as ComponentData[];
+        let className = this.props.className || "";
+        if (children.length == 0) {
+            className = className + " empty";
+        }
+
+        let style = this.props.style || {};
+        // style.width = "50%"
+        // style.float = "left";
+        className = className
+        return <ul id={guid()} className={className} style={style}
+            ref={e => {
+                if (e == null || this.containers.indexOf(e) >= 0)
+                    return
+
+                e.setAttribute(DataColumn, column.toString());
+                this.containers.push(e)
+                let enable = this.props.enable == null ? true : this.props.enable;
+                if (enable) {
+                    this.enableDrapDrop(e, args.designer);
+                    setTimeout(() => {
+                        args.componentPanel.addDropTarget(e);
+                    })
+                }
+
+            }}>
+            {children.length == 0 ?
+                <li className="text-center">
+                    <h4>请拖放组件到此处</h4>
+                </li>
+                : children.map(o => <li key={o.id} data-component-id={(o.id)}
+                    className={o.selected ? "selected" : ""}
+                    onClick={() => {
+                        args.designer.selectComponent(o.id)
+                    }}>
+                    {parseComponentData(o)}</li>)
+            }
+        </ul>
+    }
+
     render() {
         return <DesignPageContext.Consumer>
             {args => {
-                let pageData = args.pageData;
-                if (pageData == null)
-                    return null;
-
-                let children = pageData.children.filter(o => typeof o != "string" && o.parentId == this.props.id) as ComponentData[];
-                let className = this.props.className || "";
-                if (children.length == 0) {
-                    className = className + " empty";
-                }
-                return <ul className={className} style={this.props.style} ref={e => {
-                    if (e == null || this.container != null)
-                        return
-
-                    this.container = e || this.container;
-                    let enable = this.props.enable == null ? true : this.props.enable;
-                    if (enable) {
-                        this.enableDrapDrop(this.container, args.designer);
-                        setTimeout(() => {
-                            args.componentPanel.addDropTarget(this.container);
-                        })
-                    }
-
-                }}>
-                    {children.length == 0 ?
-                        <li className="text-center">
-                            <h4>请拖放组件到此处</h4>
-                        </li>
-                        : children.map(o => <li key={o.id} data-component-id={(o.id)}
-                            className={o.selected ? "selected" : ""}
-                            onClick={() => {
-                                args.designer.selectComponent(o.id)
-                            }}>
-                            {parseComponentData(o)}</li>)
-                    }
-                </ul>
+                return <>
+                    {this.createContainer(args, "0")}
+                </>
             }}
         </DesignPageContext.Consumer>
 

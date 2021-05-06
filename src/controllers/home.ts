@@ -5,17 +5,8 @@ import { Connection, } from "maishu-node-data";
 import { errors } from "../static/errors";
 import { PageRecord, StoreInfo } from "../entities";
 
-import websiteConfig from "../static/website-config";
-import { config } from "config";
-import * as http from "http";
-import * as vm from "vm";
-import concat = require("concat-stream");
-import { guid, pathConcat } from "maishu-toolkit";
-import * as fs from "fs";
 
-type WebsiteConfig = typeof websiteConfig;
 
-const DefaultTheme: keyof WebsiteConfig["componentStations"] = "aixpi";
 
 @controller("/")
 export class HomeController {
@@ -43,7 +34,7 @@ export class HomeController {
     }
 
     @action("/get-theme")
-    async getTheme(@currentAppId appId: string, @connection conn: Connection, @routeData d?: { appId?: string }) {
+    async getTheme(@currentAppId appId: string, @connection conn: Connection) {
         if (!appId) throw errors.argumentNull("appId");
 
         let storeInfo = await this.getStoreInfo(appId, conn);
@@ -56,7 +47,7 @@ export class HomeController {
 
         let themeName = await this.getTheme(appId, conn);
         let pageRecords = conn.getRepository(PageRecord);
-        let r = await pageRecords.find({ themeName });
+        let r = await pageRecords.find({ themeName, applicationId: appId });
         return r;
     }
 
@@ -79,8 +70,6 @@ export class HomeController {
     async preview(@routeData d: { id: string }, @connection conn: Connection) {
         let pageRecords = conn.getRepository(PageRecord);
         let pageRecord = await pageRecords.findOne(d.id);
-        let pageData = pageRecord.pageData;
-        let websiteConfigURL = `http://192.168.2.195:5218/aixpi/website-config.cmd.js`;
         // let bodyComponents = pageData.children.filter(o => o.parentId == "page-body");
         // bodyComponents.forEach(c => {
 

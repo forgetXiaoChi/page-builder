@@ -11,6 +11,7 @@ interface State {
 }
 
 interface Props {
+    themeName: string,
     data: {
         id?: string,
         name?: string,
@@ -30,12 +31,14 @@ export default class PageView extends React.Component<Props, State> {
             this.localService.getPageDataByName(this.props.data.name);
 
         p.then(async r => {
-            if (!r?.templateId) {
+            if (!r?.templateName) {
                 return r;
             }
 
-            let template = await this.localService.getPageRecord(r.templateId);
-            PageHelper.mergeTemplate(r.pageData, template.pageData);
+            let template = await this.localService.getPageDataByName(r.templateName);
+            if (template?.pageData)
+                PageHelper.mergeTemplate(r.pageData, template.pageData);
+
             return r;
         })
             .then(r => {
@@ -48,7 +51,7 @@ export default class PageView extends React.Component<Props, State> {
                     c.props.data = this.props.data;
                 })
 
-                let componentLoader = new ComponentLoader(r.pageData, true);
+                let componentLoader = new ComponentLoader(r.pageData, this.props.themeName, true);
                 componentLoader.loadComponentsComplete.add(() => {
                     this.setState({ pageData: r.pageData });
                 })

@@ -2,7 +2,7 @@
 import { WebsiteConfig } from "maishu-admin-scaffold/static/website-config";
 
 type MyWebsiteConfig = WebsiteConfig & {
-    componentStations: { aixpi: string, flone: string },
+    componentStations: { aixpi: string, flone: string, generic: string },
     componentShare: string,
     storeUrl: string,
 };
@@ -14,7 +14,8 @@ let websiteConfig: MyWebsiteConfig = {
     // 组件站点配置
     componentStations: {
         aixpi: `http://192.168.2.195:6739/aixpi`,
-        flone: `http://192.168.2.192:6739/flone`,
+        flone: `http://192.168.2.195:6739/flone`,
+        generic: `http://192.168.2.195:6739/generic`,
         // aixpi: `http://192.168.2.14:6739/aixpi`,
         // flone: `http://192.168.2.14:6739/flone`,
     },
@@ -23,7 +24,7 @@ let websiteConfig: MyWebsiteConfig = {
     //===================================================
     storeUrl: "http://192.168.2.195:5218/",
     requirejs: {
-        context: "site",
+        context: "site",    
         shim: {
             "node_modules/bootstrap/js/button": { deps: ["jquery"], exports: "jQuery" },
             "node_modules/bootstrap/js/dropdown": { deps: ["jquery"], exports: "jQuery" },

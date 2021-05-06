@@ -4,6 +4,7 @@ import { PageRecord } from "../entities";
 import { errors } from "../static/errors";
 import { guid } from "maishu-toolkit";
 import { connection, currentAppId } from "../decoders";
+import { HomeController } from "./home";
 
 @controller("page-data")
 export class PageDataController {
@@ -44,7 +45,7 @@ export class PageDataController {
         if (item.id == null) throw errors.argumentFieldNull("id", "item");
         if (!appId) throw errors.argumentNull("appId");
 
-        let obj: Partial<PageRecord> = { pageData: item.pageData, templateId: item.templateId };
+        let obj: Partial<PageRecord> = { pageData: item.pageData, templateName: item.templateName };
         if (item.name) {
             obj.name = item.name;
         }
@@ -96,22 +97,25 @@ export class PageDataController {
     }
 
     @action("template-list")
-    templateList(@connection conn: Connection) {
+    async templateList(@currentAppId appId: string, @connection conn: Connection) {
         if (!conn) throw errors.argumentNull("conn");
+        if (!currentAppId) throw errors.argumentNull("currentAppId");
 
-        let pageRecords = conn.getRepository(PageRecord).find({ select: ["id", "name"], where: { type: "template" } });
+        let ctrl = new HomeController();
+        let themeName = await ctrl.getTheme(appId, conn);
+        let pageRecords = await conn.getRepository(PageRecord).find({
+            select: ["id", "name", "displayName"],
+            where: { type: "template", themeName, applicationId: appId }
+        });
         return pageRecords;
-
     }
 
     @action("css/:pageId")
-    async pageStye(@connection conn: Connection, @routeData d: { pageId: string }) {
+    async pageStyle(@connection conn: Connection, @routeData d: { pageId: string }) {
         let r = new ContentResult("", { "content-type": "text/css" });
         let t = conn.getRepository(PageRecord);
         let p = await t.findOne(d.pageId);
         if (!p) throw errors.pageRecordNotExists(d.pageId);
-
-
 
         return r;
     }

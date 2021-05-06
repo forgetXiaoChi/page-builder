@@ -39,7 +39,7 @@ export default class TempPage extends React.Component<Props, State> {
         if (pageRecord === null)
             return <div>数据加载失败</div>
 
-        return <PageView pageData={pageRecord.pageData} />
+        return <PageView pageData={pageRecord.pageData} themeName="generic" />
     }
 }
 

@@ -10,7 +10,9 @@ let cnStrings = {
         name: "名称",
         inputPageName: "请输入页面名称",
         theme: "主题",
-        selectTheme: "请选择主题"
+        selectTheme: "请选择主题",
+        template: "模板",
+        selectTemplate: "请选择模板"
     }
 };
 

@@ -5,13 +5,14 @@ import { ComponentPanel } from "../component-panel";
 import { ComponentLoader } from "../component-loader";
 import "css!devices"
 
-type T = { page: DesignPage, designer: PageDesigner, pageData: PageData, componentPanel: ComponentPanel };
-export let DesignPageContext = React.createContext<T>({ page: null, designer: null, pageData: null, componentPanel: null });
+export type ContextArguments = { page: DesignPage, designer: PageDesigner, pageData: PageData, componentPanel: ComponentPanel };
+export let DesignPageContext = React.createContext<ContextArguments>({ page: null, designer: null, pageData: null, componentPanel: null });
+window["DesignPageContext"] = DesignPageContext;
 
 interface State {
 }
 
-export class DesignPage extends React.Component<{ pageData: PageData, componentPanel: ComponentPanel }, State> {
+export class DesignPage extends React.Component<{ pageData: PageData, componentPanel: ComponentPanel, themeName: string }, State> {
     element: HTMLElement;
     componentLoader: ComponentLoader;
 
@@ -24,7 +25,7 @@ export class DesignPage extends React.Component<{ pageData: PageData, componentP
 
 
     createComponentLoader(pageData: PageData) {
-        this.componentLoader = new ComponentLoader(pageData);
+        this.componentLoader = new ComponentLoader(pageData, this.props.themeName);
         this.componentLoader.loadComponentSuccess.add(args => {
             // let componentInfo = args.componentInfo;
             // Promise.all([
@@ -44,6 +45,7 @@ export class DesignPage extends React.Component<{ pageData: PageData, componentP
 
     UNSAFE_componentWillReceiveProps(props: DesignPage["props"]) {
         this.createComponentLoader(props.pageData);
+        this.componentLoader.loadComponentTypes();
     }
 
     componentDidMount() {
@@ -53,7 +55,7 @@ export class DesignPage extends React.Component<{ pageData: PageData, componentP
     render() {
         return <DesignerContext.Consumer>
             {args => {
-                let value: T = {
+                let value: ContextArguments = {
                     page: this, designer: args.designer, pageData: this.props.pageData,
                     componentPanel: this.props.componentPanel
                 };

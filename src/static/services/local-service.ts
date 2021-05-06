@@ -201,24 +201,25 @@ export class LocalService {
     }
 
 
-    async componentInfos(times: "designtime" | "runtime") {
-        let config = await this.componentStationConfig(times);
+    async componentInfos(times: "designtime" | "runtime", themeName: string) {
+        let config = await this.componentStationConfig(times, themeName);
         return config.components;
     }
 
-    async componentGroups() {
-        let config = await this.componentStationConfig("designtime");
+    async componentGroups(themeName: string) {
+        let config = await this.componentStationConfig("designtime", themeName);
         return config.groups;
     }
 
     private _componentStationConfig: ComponentStationConfig;
-    async componentStationConfig(times: "designtime" | "runtime"): Promise<ComponentStationConfig> {
-        let themenName = await this.getTheme();
-        let componentStationPath = websiteConfig.componentStations[themenName];
+    async componentStationConfig(times: "designtime" | "runtime", themeName: string): Promise<ComponentStationConfig> {
+        if (!themeName)
+            themeName = await this.getTheme();
+
         if (this._componentStationConfig != null)
             return this._componentStationConfig;
 
-        let url = LocalService.url(`${themenName}/website-config.js`);
+        let url = LocalService.url(`${themeName}/website-config.js`);
         this._componentStationConfig = await this.loadJS(url);
 
         let _componentInfos = this._componentStationConfig.components;
@@ -229,24 +230,24 @@ export class LocalService {
             (_componentInfos as any)["pathContacted"] = true;
             _componentInfos.forEach(o => {
                 if (o.path != null) {
-                    o.path = pathConcat(themenName, o.path);
+                    o.path = pathConcat(themeName, o.path);
                     if (times == "designtime") {
                         o.path = o.path + ".des";
                     }
                 }
 
                 if (o.editor != null)
-                    o.editor = pathConcat(themenName, o.editor);
+                    o.editor = pathConcat(themeName, o.editor);
 
                 if (o.design != null) {
-                    o.design = pathConcat(themenName, o.design);
+                    o.design = pathConcat(themeName, o.design);
                     if (times == "designtime") {
                         o.design = o.design + ".des";
                     }
                 }
 
                 if (o.layout != null)
-                    o.layout = pathConcat(themenName, o.layout);
+                    o.layout = pathConcat(themeName, o.layout);
 
             })
         }
@@ -283,7 +284,7 @@ export class LocalService {
     }
 
     /** 获取模板 */
-    private async getTheme(): Promise<string> {
+    async getTheme(): Promise<string> {
         let url = LocalService.url("get-theme");
         let r = await service.getByJson<string>(url);
         return r;

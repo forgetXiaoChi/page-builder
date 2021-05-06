@@ -4,7 +4,8 @@ import { ComponentLoader } from "./component-loader";
 import { LocalService } from "../services";
 
 export interface PageViewProps {
-    pageData: PageData
+    pageData: PageData,
+    themeName: string,
 }
 
 export interface PageViewState {
@@ -31,7 +32,7 @@ export class PageView extends React.Component<PageViewProps, PageViewState> {
     }
 
     createComponentLoader(pageData: PageData) {
-        let componentLoader = new ComponentLoader(pageData);
+        let componentLoader = new ComponentLoader(pageData, this.props.themeName);
         componentLoader.loadComponentSuccess.add(args => {
         })
         componentLoader.loadComponentsComplete.add(() => {

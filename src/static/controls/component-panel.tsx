@@ -52,7 +52,7 @@ export class ComponentPanel extends React.Component<ComponentToolbarProps, Compo
     }
 
     addDropTarget(targetElement: Element) {
-        this.targetElements.push(targetElement);
+        this.targetElements.unshift(targetElement);
         $(this.element).find("li").draggable("option", "connectToSortable", this.targetElements);
     }
 

@@ -26,7 +26,8 @@ interface State {
     // pageName: string,
     templateRecord?: PageRecord,
     templateList?: PageRecord[],
-    groups?: { id: string, name: string }[]
+    groups?: { id: string, name: string }[],
+    themeName?: string,
 }
 
 interface Props extends PageProps {
@@ -41,7 +42,7 @@ export default class PCPageEdit extends React.Component<Props, State> {
     editorPanel: EditorPanel;
     validator: FormValidator;
     pageDesigner: PageDesigner;
-    // componentLoader: ComponentLoader;
+    // themeName: string;
 
     constructor(props) {
         super(props);
@@ -50,25 +51,21 @@ export default class PCPageEdit extends React.Component<Props, State> {
             pageRecord: this.props.pageRecord, isReady: false,
         };
 
-        localService.componentStationConfig("designtime").then(c => {
-            let componentInfos = c.components;
-            if (c.components != null) {
-                componentInfos = componentInfos.filter(o => o.displayName != null);
-                this.setState({ componentInfos, groups: c.groups });
-                componentInfos.forEach(c => {
-                    c.data = c.data || { id: guid(), type: c.type, props: {} };
-                })
-                this.componentPanel.setComponets(componentInfos.map(o => Object.assign(o, {
-                    componentData: { type: o.type, props: {} } as ComponentData
-                })));
-            }
 
-            //==========================================================================================
-        });
+
 
         localService.templateList().then(r => {
             this.setState({ templateList: r })
         });
+    }
+
+    async getThemeName() {
+        let fileName = this.props.source.name.split("/").pop();
+        let themeName = fileName.split("-").shift();
+        if (themeName == "pc")
+            themeName = await localService.getTheme();
+
+        return themeName;
     }
 
     private emptyRecord(): Partial<PageRecord> {
@@ -87,16 +84,34 @@ export default class PCPageEdit extends React.Component<Props, State> {
     }
 
     async componentDidMount() {
-        let pageRecord: PageRecord;
+
+        let themeName = await this.getThemeName();
+        localService.componentStationConfig("designtime", themeName).then(c => {
+            let componentInfos = c.components;
+            if (c.components != null) {
+                componentInfos = componentInfos.filter(o => o.displayName != null);
+                this.setState({ componentInfos, groups: c.groups });
+                componentInfos.forEach(c => {
+                    c.data = c.data || { id: guid(), type: c.type, props: {} };
+                })
+                this.componentPanel.setComponets(componentInfos.map(o => Object.assign(o, {
+                    componentData: { type: o.type, props: {} } as ComponentData
+                })));
+            }
+
+            this.setState({ themeName })
+            //==========================================================================================
+        });
+
         let templateRecord: PageRecord;
         this.getPageRecord().then(async pageRecord => {
-            if (pageRecord?.templateId) {
-                templateRecord = await localService.getPageRecord(pageRecord.templateId);
+            if (pageRecord?.templateName) {
+                templateRecord = await localService.getPageDataByName(pageRecord.templateName);
             }
 
             this.getPageRecord().then(async pageRecord => {
-                if (pageRecord?.templateId) {
-                    templateRecord = await localService.getPageRecord(pageRecord.templateId);
+                if (pageRecord?.templateName) {
+                    templateRecord = await localService.getPageDataByName(pageRecord.templateName);
                 }
                 this.setState({ isReady: true, pageRecord, templateRecord });
             })
@@ -124,7 +139,7 @@ export default class PCPageEdit extends React.Component<Props, State> {
         return pageRecord;
     }
 
-    private renderPageData(pageData: PageData, componentPanel: ComponentPanel, template?: PageData) {
+    private renderPageData(pageData: PageData, componentPanel: ComponentPanel, themeName: string, template?: PageData) {
         if (componentPanel == null)
             return;
 
@@ -141,7 +156,7 @@ export default class PCPageEdit extends React.Component<Props, State> {
         }
         //=====================================================
 
-        return <DesignPage pageData={pageData} componentPanel={componentPanel}
+        return <DesignPage pageData={pageData} componentPanel={componentPanel} themeName={themeName}
             ref={e => {
                 if (!e) return;
                 e.componentLoader.loadComponentSuccess.add(args => {
@@ -260,25 +275,23 @@ export default class PCPageEdit extends React.Component<Props, State> {
         );
     }
 
-    changeTemplate(templateId: string) {
+    changeTemplate(templateName: string) {
         let { pageRecord, templateRecord } = this.state;
-        pageRecord.templateId = templateId;
+        pageRecord.templateName = templateName;
 
-        if (!templateId) {
+        if (!templateName) {
             if (templateRecord != null) {
                 PageHelper.trimTemplate(pageRecord.pageData, templateRecord.pageData);
             }
             this.setState({ templateRecord: null, pageRecord });
             return;
         }
-        localService.getPageRecord(templateId).then(r => {
+        localService.getPageRecord(templateName).then(r => {
             this.setState({ templateRecord: r });
         });
     }
 
     preview(pageRecord: PageRecord) {
-        // let url = LocalService.url("preview.html");
-        // window.open(`${url}?id=${pageRecord.id}&application-id=${localStorage.getItem("application-id")}`);
         let url = `${websiteConfig.storeUrl}?id=${pageRecord.id}&application-id=${localStorage.getItem("application-id")}`;
         window.open(url);
     }
@@ -331,11 +344,11 @@ export default class PCPageEdit extends React.Component<Props, State> {
     }
 
     renderMain() {
-        let { pageRecord, componentInfos, isReady, templateRecord, templateList } = this.state;
+        let { pageRecord, componentInfos, isReady, templateRecord, templateList, themeName } = this.state;
         let pageData = pageRecord?.pageData;
         templateList = templateList || [];
 
-        if (pageRecord === undefined || componentInfos == undefined)
+        if (pageRecord === undefined || componentInfos == undefined || themeName == undefined)
             return <div className="empty">
                 数据加载中...
             </div>
@@ -377,8 +390,8 @@ export default class PCPageEdit extends React.Component<Props, State> {
                                 <select className="form-control" value={templateRecord?.id || ""} style={{ width: 180 }}
                                     onChange={e => this.changeTemplate(e.target.value)}>
                                     <option value="">请选择模板</option>
-                                    {templateList.map(t => <option value={t.id} key={t.id}>
-                                        {t.name}
+                                    {templateList.map(t => <option value={t.name} key={t.id}>
+                                        {t.displayName || t.name}
                                     </option>)}
                                 </select>
                             </div>
@@ -460,7 +473,7 @@ export default class PCPageEdit extends React.Component<Props, State> {
                     ref={e => this.editorPanel = this.editorPanel || e} />
             </div>
             <DesignerContext.Consumer>
-                {() => isReady ? this.renderPageData(pageRecord.pageData, this.componentPanel, templateRecord?.pageData) : null}
+                {() => isReady ? this.renderPageData(pageRecord.pageData, this.componentPanel, themeName, templateRecord?.pageData) : null}
             </DesignerContext.Consumer>
         </PageDesigner>
     }

@@ -24,14 +24,20 @@ export class PageRecord {
     @Column({ name: "edit_page", type: "varchar", length: 45, nullable: true })
     editPage?: string;
 
-    @Column({ name: "template_id", type: "varchar", length: 36, nullable: true })
-    templateId?: string;
+    // @Column({ name: "template_id", type: "varchar", length: 36, nullable: true })
+    // templateId?: string;
 
     @Column({ name: "theme_name", type: "varchar", length: 40, nullable: true })
     themeName: string;
 
     @Column({ type: "varchar", length: 100, nullable: true })
     remark: string;
+
+    @Column({ name: "template_name", type: "varchar", length: 45, nullable: true })
+    templateName?: string;
+
+    @Column({ name: "display_name", type: "varchar", length: 45, nullable: true })
+    displayName?: string;
 }
 
 @Entity("data_object")

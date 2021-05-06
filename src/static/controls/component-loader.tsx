@@ -36,9 +36,11 @@ export class ComponentLoader {
     private _pageData: PageData;
     private isDesignMode: boolean;
     private typesToLoad: string[];
+    private themeName: string;
 
-    constructor(pageData: PageData, isRuntimeMode?: boolean) {
+    constructor(pageData: PageData, themeName: string, isRuntimeMode?: boolean) {
         this._pageData = pageData;
+        this.themeName = themeName;
 
         isRuntimeMode = isRuntimeMode == null ? false : isRuntimeMode;
         this.isDesignMode = !isRuntimeMode;
@@ -85,12 +87,12 @@ export class ComponentLoader {
             this.loadComponentsComplete.fire({});
             return;
         }
-
+        
         let executedCount = 0;
         for (let i = 0; i < this.typesToLoad.length; i++) {
             let type = this.typesToLoad[i];
 
-            loadComponentType(type, this.isDesignMode).then(c => {
+            loadComponentType(type, this.isDesignMode, this.themeName).then(c => {
                 registerComponent(type, c.componentType);
                 if (c.componentInfo != null) {
                     this.loadComponentSuccess.fire({
@@ -129,8 +131,8 @@ export class ComponentLoader {
 }
 
 
-async function loadComponentType(typeName: string, isDesignMode: boolean) {
-    let componentInfos = await localService.componentInfos(isDesignMode ? "designtime" : "runtime");
+async function loadComponentType(typeName: string, isDesignMode: boolean, themeName: string) {
+    let componentInfos = await localService.componentInfos(isDesignMode ? "designtime" : "runtime", themeName);
     let componentInfo = componentInfos.filter(o => o.type == typeName)[0];
     if (componentInfo == null) {
         let error = errors.canntFindComponentInfo(typeName);;

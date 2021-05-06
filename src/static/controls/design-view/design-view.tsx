@@ -20,6 +20,7 @@ interface Props {
     hidePageSettingPanel?: boolean,
     toolbarButtons?: JSX.Element[],
     customRender?: EditorPanelProps["customRender"],
+    themeName: string,
 }
 
 interface State {
@@ -138,7 +139,7 @@ export class DesignView extends React.Component<Props, State> {
         //     ])
         // })
 
-        return <DesignPage pageData={pageData} componentPanel={componentPanel} />
+        return <DesignPage pageData={pageData} componentPanel={componentPanel} themeName={this.props.themeName} />
     }
 
     get element() {
