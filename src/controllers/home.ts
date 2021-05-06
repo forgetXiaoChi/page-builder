@@ -6,17 +6,15 @@ import { errors } from "../static/errors";
 import { PageRecord, StoreInfo } from "../entities";
 
 
-
-
-@controller("/")
+@controller("api/home")
 export class HomeController {
 
-    @action("/menu-items")
+    @action("menu-items")
     menuItems(@contextData cd: ContextData) {
         return cd.menuItem;
     }
 
-    @action("/set-theme")
+    @action("set-theme")
     async setTheme(@currentAppId appId: string, @connection conn: Connection, @routeData d: { themeName: string }) {
         if (!appId) throw errors.argumentNull("appId");
         if (!d.themeName) throw errors.routeDataFieldNull("themeName");
@@ -33,7 +31,7 @@ export class HomeController {
         return { id: storeInfo.id };
     }
 
-    @action("/get-theme")
+    @action("get-theme")
     async getTheme(@currentAppId appId: string, @connection conn: Connection) {
         if (!appId) throw errors.argumentNull("appId");
 
@@ -41,7 +39,7 @@ export class HomeController {
         return storeInfo.theme;
     }
 
-    @action("/get-pages")
+    @action("get-pages")
     async getPages(@currentAppId appId: string, @connection conn: Connection) {
         if (!conn) throw errors.argumentNull("conn");
 
@@ -66,16 +64,6 @@ export class HomeController {
         return storeInfo;
     }
 
-    @action("/preview/:id")
-    async preview(@routeData d: { id: string }, @connection conn: Connection) {
-        let pageRecords = conn.getRepository(PageRecord);
-        let pageRecord = await pageRecords.findOne(d.id);
-        // let bodyComponents = pageData.children.filter(o => o.parentId == "page-body");
-        // bodyComponents.forEach(c => {
-
-        // })
-
-    }
 
     // /** 处理 html 请求 */
     // @action("*.html")

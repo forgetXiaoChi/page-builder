@@ -6,7 +6,7 @@ import { connection, currentAppId } from "../decoders";
 import { HtmlSnippet } from "../entities";
 import { errors } from "../static/errors";
 
-@controller("html-snippet")
+@controller("api/html-snippet")
 export class HtmlSnippetController {
 
     @action()

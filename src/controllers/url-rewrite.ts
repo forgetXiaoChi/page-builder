@@ -7,7 +7,7 @@ import { connection, currentAppId } from "../decoders";
 import { UrlRewrite } from "../entities";
 import { errors } from "../static/errors";
 
-@controller("url-rewrite")
+@controller("api/url-rewrite")
 export class UrlRewriteController {
     @action()
     async list(@connection conn: Connection, @routeData d: { args: DataSourceSelectArguments }, @currentAppId appId: string) {

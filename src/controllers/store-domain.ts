@@ -5,7 +5,7 @@ import { connection, currentAppId } from "../decoders";
 import { StoreDomain } from "../entities";
 import { errors } from "../static/errors";
 
-@controller("store-domain")
+@controller("api/store-domain")
 export class StoreDomainController {
     @action()
     async list(@connection conn: Connection, @currentAppId appId) {
@@ -65,5 +65,23 @@ export class StoreDomainController {
 
         let r: Pick<StoreDomain, "id"> = { id: item.id };
         return r;
+    }
+
+    @action()
+    async default(@connection conn: Connection, @currentAppId appId: string): Promise<string> {
+        let storeDomains = conn.getRepository(StoreDomain);
+        let item = await storeDomains.findOne({
+            where: {
+                applicationId: appId,
+            },
+            order: {
+                createDateTime: "ASC"
+            }
+        });
+
+        if (item == null)
+            throw errors.canntFindDomain(appId);
+
+        return item.domain;
     }
 }
