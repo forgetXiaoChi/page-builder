@@ -34,4 +34,7 @@ export let routers = [
         name: nameRegex,
         filePath: /[0-9A-Za-z\-_\/\.]/,
     }),
+    createRouter("/:name", {
+        name: /^[0-9A-Za-z\-_]*$/,
+    }),
 ];

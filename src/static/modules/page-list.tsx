@@ -41,39 +41,51 @@ export default class PageListPage extends React.Component<{}, State> {
                 customDataField<PageRecord>({
                     headerText: "操作",
                     itemStyle: { textAlign: "center", width: "150px" },
-                    render: (dataItem, cellElement) => {
-                        ReactDOM.render(<>
-                            <button key="btnModify" className="btn btn-purple btn-minier"
-                                onClick={() => location.href = this.editUrl(dataItem.themeName, dataItem.name)}>
-                                装修页面
-                            </button>
-                            <button key="btnEdit" className="btn btn-info btn-minier"
-                                onClick={() => location.href = this.editUrl(dataItem.themeName, dataItem.name)}>
-                                <i className="fa fa-pencil"></i>
-                            </button>
-                            <button key="btn-delete" className="btn btn-danger btn-minier"
-                                ref={e => {
-                                    if (!e) return;
-                                    buttonOnClick(e, () => this.deleteItem(dataItem))
-                                }}>
-                                <i className="fa fa-trash"></i>
-                            </button>
-                        </>, cellElement)
+                    render: (dataItem, cellElement): void => {
+                        (async () => {
+                            let editUrl = await this.editUrl(dataItem.themeName, dataItem.name);
+
+                            ReactDOM.render(<>
+                                <button key="btnModify" className="btn btn-purple btn-minier"
+                                    onClick={() => location.href = editUrl}>
+                                    装修页面
+                                </button>
+                                <button key="btnEdit" className="btn btn-info btn-minier"
+                                    onClick={() => this.showEditDialog(dataItem)}>
+                                    <i className="fa fa-pencil"></i>
+                                </button>
+                                <button key="btn-delete" className="btn btn-danger btn-minier"
+                                    ref={e => {
+                                        if (!e) return;
+                                        buttonOnClick(e, () => this.deleteItem(dataItem))
+                                    }}>
+                                    <i className="fa fa-trash"></i>
+                                </button>
+                            </>, cellElement)
+
+                        })()
                     }
                 })
             ]
         })
     }
-    editUrl(themeName: string, name: string) {
-        if (!themeName)
-            return `#/${LocalService.url(`generic-page-edit?name=${name}`)}`;
+    async editUrl(themeName: string, name: string) {
+        if (!themeName) {
+            themeName = await localService.getTheme();
+        }
 
         return `#/${LocalService.url(`${themeName}-page-edit?name=${name}`)}`;
     }
-    add() {
+    showAddDialog() {
         this.validator.clearErrors();
         showDialog(this.dialogElement);
     }
+    showEditDialog(item: Partial<PageRecord>) {
+        this.validator.clearErrors();
+        this.setState({ item });
+        showDialog(this.dialogElement);
+    }
+
     async deleteItem(item: PageRecord) {
         await this.gridView.dataSource.delete(item);
     }
@@ -106,7 +118,7 @@ export default class PageListPage extends React.Component<{}, State> {
             <ul className="nav nav-tabs">
                 <li className="pull-right">
                     <button key="btnAdd" className="btn btn-primary "
-                        onClick={() => this.add()}>
+                        onClick={() => this.showAddDialog()}>
                         <i className="fa fa-plus"></i>
                         <span>{strings.add}</span>
                     </button>

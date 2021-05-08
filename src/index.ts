@@ -79,9 +79,6 @@ export function start(settings: Settings) {
 }
 
 const AppName = "application-id";
-// const pageNames = ["account", "checkout", "login", "home", "login", "order-detail", "order-list", "product", "product-list",
-//     "receipt-edit", "receipt-list", "search", "shipping", "shopping-cart"];
-
 async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
 
     //===============================================================
@@ -101,40 +98,6 @@ async function storeUrlRewrite(rawUrl: string, req: IncomingMessage) {
         query = rawUrl.substr(queryIndex + 1);
         pathname = rawUrl.substr(0, queryIndex);
     }
-
-    // let nameRegex = new RegExp(pageNames.join("|"));
-    // let routers = [
-    //     createRouter("/:id/?productId/*filePath", {
-    //         id: /^[0-9A-Fa-f\-]{36}$/,
-    //         productId: /^[0-9A-Fa-f\-]{36}$/,
-    //         filePath: /[0-9A-Za-z\-_\/\.]/,
-    //     }),
-    //     createRouter("/:name/:productId/*filePath", {
-    //         name: /product/,
-    //         productId: /^[0-9A-Fa-f\-]{36}$/,
-    //         filePath: /[0-9A-Za-z\-_\/\.]/,
-    //     }),
-    //     createRouter("/:name/:productName/*filePath", {
-    //         name: /product/,
-    //         productName: /\\S+/,
-    //         filePath: /[0-9A-Za-z\-_\/\.]/,
-    //     }),
-    //     createRouter("/:name/:orderId/*filePath", {
-    //         name: /checkout|order-detail|shipping|register/,
-    //         orderId: /^[0-9A-Fa-f\-]{36}$/,
-    //         filePath: /[0-9A-Za-z\-_\/\.]/,
-    //     }),
-    //     createRouter("/:name/:orderId/*filePath", {
-    //         name: /receipt-edit/,
-    //         receiptId: /^[0-9A-Fa-f\-]{36}$/,
-    //         filePath: /[0-9A-Za-z\-_\/\.]/,
-    //     }),
-    //     createRouter("/:name/*filePath", {
-    //         name: nameRegex,
-    //         filePath: /[0-9A-Za-z\-_\/\.]/,
-    //     }),
-    // ]
-
 
     let m: { [key: string]: string } | null = null;
     if (rawUrl == "/")

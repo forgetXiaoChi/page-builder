@@ -14,7 +14,6 @@ import * as ui from "maishu-ui-toolkit";
 import { ComponentInfo } from "../model";
 import { guid } from "maishu-toolkit";
 import { ComponentLoader } from "../controls/component-loader";
-import websiteConfig from "website-config";
 
 import "./content/pc-page-edit.less";
 import "../create-design-element";
@@ -50,9 +49,6 @@ export default class PCPageEdit extends React.Component<Props, State> {
         this.state = {
             pageRecord: this.props.pageRecord, isReady: false,
         };
-
-
-
 
         localService.templateList().then(r => {
             this.setState({ templateList: r })
@@ -286,19 +282,19 @@ export default class PCPageEdit extends React.Component<Props, State> {
             this.setState({ templateRecord: null, pageRecord });
             return;
         }
-        localService.getPageRecord(templateName).then(r => {
+        localService.getPageDataByName(templateName).then(r => {
             this.setState({ templateRecord: r });
         });
     }
 
-    preview(pageRecord: PageRecord) {
-        let url = `${websiteConfig.storeUrl}?id=${pageRecord.id}&application-id=${localStorage.getItem("application-id")}`;
+    async preview(pageRecord: PageRecord) {
+        let domain = await localService.defaultStoreDomain();
+        let url = `${location.protocol}//${domain}:5218/${pageRecord.name}`;
         window.open(url);
     }
 
     render() {
         let { pageRecord, templateList } = this.state;
-        // let pageData = pageRecord?.pageData;
         templateList = templateList || [];
         return <>
             <div>
@@ -387,7 +383,7 @@ export default class PCPageEdit extends React.Component<Props, State> {
                             <div className="pull-left">
                                 页面模板</div>
                             <div className="pull-right">
-                                <select className="form-control" value={templateRecord?.id || ""} style={{ width: 180 }}
+                                <select className="form-control" value={templateRecord?.name || ""} style={{ width: 180 }}
                                     onChange={e => this.changeTemplate(e.target.value)}>
                                     <option value="">请选择模板</option>
                                     {templateList.map(t => <option value={t.name} key={t.id}>

@@ -57,11 +57,14 @@ class MyApplication extends Application {
 
         let a = document.createElement("a");
         a.href = url;
-
+        let pathname = a.pathname;
+        if (pathname == "/") {
+            pathname = "/home";
+        }
         let m: { [name: string]: string } | null = null;
         let values: any = {};
         for (let i = 0; i < routers.length; i++) {
-            m = routers[i].match(a.pathname);
+            m = routers[i].match(pathname);
             if (m) {
                 values = Object.assign({}, m);
                 if (a.search && a.search.length > 1) {
@@ -78,12 +81,6 @@ class MyApplication extends Application {
         return { pageName: "page", values };
     }
 
-    // run() {
-    //     let url: string = window["actualUrl"] || location.href;
-    //     let queryIndex = url.indexOf("?");
-    //     let query = url.substr(queryIndex);
-    //     this.showPage("page" + query);
-    // }
 
 }
 
