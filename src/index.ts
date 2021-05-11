@@ -4,7 +4,7 @@ import { getVirtualPaths } from "maishu-admin-scaffold";
 import { ConnectionOptions, createConnection } from "maishu-node-data";
 import websiteConfig from "./static/website-config";
 import { sourceVirtualPaths } from "maishu-chitu-scaffold";
-import { getDomain, StoreHtmlTransform } from "./content-transforms/html-transform";
+import { getDomain, StoreHtmlTransform } from "./content-transforms/store-html-transform";
 import { pathConcat } from "maishu-toolkit";
 import * as querystring from "querystring";
 import { getMyConnection } from "./decoders";
@@ -12,6 +12,7 @@ import { PageRecord, StoreDomain, StoreInfo, UrlRewrite } from "./entities";
 import { IncomingMessage } from "http";
 import { startMessage } from "./message";
 import { routers } from "./static/routers";
+import { AdminHtmlTransform } from "./content-transforms/admin-html-transform";
 
 interface Settings {
     port: number,
@@ -61,10 +62,11 @@ export function start(settings: Settings) {
         contextData,
         websiteDirectory: __dirname,
         virtualPaths,
-        proxy
+        proxy,
     }
 
-    startServer(mvcSettings, "mvc");
+    let adminServer = startServer(mvcSettings, "mvc");
+    adminServer.contentTransforms.push(new AdminHtmlTransform());
 
     let storeServer = startServer({
         port: port + 1,
