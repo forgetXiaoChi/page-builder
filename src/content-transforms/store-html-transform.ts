@@ -58,7 +58,7 @@ export class StoreHtmlTransform implements ContentTransform {
             return result;
         }
 
-        script.innerHTML = script.innerHTML + `window["applicationId"]='${applicationId}';\r\n`;
+        script.innerHTML = script.innerHTML + `window["application-id"]='${applicationId}';\r\n`;
 
         //=========================================================================================
         // 实现 HTML 片段附加到页面

@@ -24,14 +24,14 @@ export class AdminHtmlTransform implements ContentTransform {
 
         let html = await this.contentToString(result.content);
         let htmlElement = HTMLParser.parse(html);
-
-        let script = new HTMLParser.HTMLElement("script", {}, "", null);
-        htmlElement.appendChild(script);
-
-        script.innerHTML = script.innerHTML + `window["application-id"]='${storeDomain.applicationId}';\r\n`;
-
+        htmlElement = htmlElement.querySelector("html");
+        if (htmlElement != null) {
+            let script = new HTMLParser.HTMLElement("script", {}, "", null);
+            htmlElement.appendChild(script);
+            script.innerHTML = script.innerHTML + `\r\nwindow["application-id"]='${storeDomain.applicationId}';\r\n`;
+        }
+     
         result.content = htmlElement.toString();
-
         return result;
     }
 
