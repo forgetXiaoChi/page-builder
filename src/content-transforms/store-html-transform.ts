@@ -20,6 +20,17 @@ export class StoreHtmlTransform implements ContentTransform {
 
         let html = await this.contentToString(result.content);
         let htmlElement = HTMLParser.parse(html);
+
+        let previewRefScript = htmlElement.querySelector('script[data-main="preview"]');
+        if (previewRefScript != null) {
+            let u = url.parse(context.req.url || "");
+            let arr = u.pathname.split("/").filter(o => o);
+            arr.pop();
+            let prefixPath = arr.map(o => "..").join("/");
+            let previewPath = prefixPath + "/" + "preview";
+            previewRefScript.setAttribute("data-main", previewPath);
+        }
+
         console.assert(htmlElement != null);
         let headElement = htmlElement.querySelector("head");
         if (headElement == null) {

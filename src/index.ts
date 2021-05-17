@@ -16,19 +16,18 @@ import { AdminHtmlTransform } from "./content-transforms/admin-html-transform";
 
 interface Settings {
     port: number,
-    // componentStations: { [key: string]: string },
     messageHost: string,
     imageHost: string,
     db: ConnectionOptions,
     menuItems?: MenuItem[],
 }
 
-export function start(settings: Settings) {
+export async function start(settings: Settings) {
 
     let { imageHost, port, db } = settings;
 
 
-    createConnection(db);
+    await createConnection(db);
 
     startMessage(settings.messageHost);
     let contextData: ContextData = {
@@ -44,6 +43,7 @@ export function start(settings: Settings) {
     virtualPaths["/static/node_modules"] = path.join(__dirname, "../node_modules");
     virtualPaths["/static/content"] = path.join(__dirname, "../content");
     virtualPaths["/static/modules/content"] = path.join(__dirname, "../content/modules");
+
     for (let themeName in websiteConfig.componentStations) {
         virtualPaths[`/static/modules/${themeName}-page-edit.js`] = path.join(__dirname, "static/modules/pc-page-edit.js");
     }

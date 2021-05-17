@@ -33,7 +33,7 @@ export default class PageListPage extends React.Component<{}, State> {
             element: e,
             dataSource: dataSources.pageRecords,
             columns: [
-                boundField<PageRecord>({ dataField: "name", headerText: "名称" }),
+                boundField<PageRecord>({ dataField: "name", headerText: "名称", sortExpression: "name" }),
                 boundField<PageRecord>({ dataField: "remark", headerText: "备注" }),
                 boundField<PageRecord>({ dataField: "themeName", headerText: "主题", sortExpression: "themeName" }),
                 boundField<PageRecord>({ dataField: "templateName", headerText: "模板", sortExpression: "templateName" }),

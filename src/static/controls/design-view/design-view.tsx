@@ -196,8 +196,30 @@ export class DesignView extends React.Component<Props, State> {
                     </li>)}
                     {toolbarButtons.map((o, i) => <li key={i} className="pull-right">{o}</li>)}
                 </ul>
-                <div>
-                    {hidePageSettingPanel ? null : <div className="pull-right" style={{ width: 240 }}>
+                <div className="designer-view">
+                    <div style={{ marginRight: hidePageSettingPanel ? null : 260 }}>
+                        {this.props.hideToolbar ? null : <>
+                            <ComponentPanel ref={e => {
+                                if (this.componentPanel != null || e == null)
+                                    return;
+
+                                this.componentPanel = e;
+                                this.onComponentCreated();
+                            }} />
+
+                        </>}
+                        {this.props.hideEditorPanel ? null :
+                            <EditorPanel className="well" customRender={this.props.customRender}
+                                ref={e => {
+                                    if (this.editorPanel != null || e == null)
+                                        return;
+
+                                    this.editorPanel = this.editorPanel || e;
+                                    this.onComponentCreated();
+                                }} />
+                        }
+                    </div>
+                    {hidePageSettingPanel ? null : <div className="component-property-panel" >
                         <div className="panel panel-default">
                             <div className="panel-heading">页面设置</div>
                             <ul className="list-group">
@@ -279,28 +301,6 @@ export class DesignView extends React.Component<Props, State> {
                             </ul>
                         </div>
                     </div>}
-                    <div style={{ marginRight: hidePageSettingPanel ? null : 260 }}>
-                        {this.props.hideToolbar ? null : <>
-                            <ComponentPanel ref={e => {
-                                if (this.componentPanel != null || e == null)
-                                    return;
-
-                                this.componentPanel = e;
-                                this.onComponentCreated();
-                            }} />
-
-                        </>}
-                        {this.props.hideEditorPanel ? null :
-                            <EditorPanel className="well" customRender={this.props.customRender}
-                                ref={e => {
-                                    if (this.editorPanel != null || e == null)
-                                        return;
-
-                                    this.editorPanel = this.editorPanel || e;
-                                    this.onComponentCreated();
-                                }} />
-                        }
-                    </div>
                 </div>
             </div>
         </PageDesigner>

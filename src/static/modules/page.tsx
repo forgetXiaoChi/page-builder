@@ -40,25 +40,28 @@ export default class PageView extends React.Component<Props, State> {
                 PageHelper.mergeTemplate(r.pageData, template.pageData);
 
             return r;
-        })
-            .then(r => {
-                if (r == null) {
-                    this.setState({ pageData: null })
-                    return r;
-                }
+        }).then(r => {
+            if (r == null) {
+                this.setState({ pageData: null })
+                return r;
+            }
 
-                (r.pageData as PageData).children.forEach(c => {
-                    c.props.data = this.props.data;
-                })
+            (r.pageData as PageData).children.forEach(c => {
+                c.props.data = this.props.data;
+            })
 
-                let componentLoader = new ComponentLoader(r.pageData, this.props.themeName, true);
-                componentLoader.loadComponentsComplete.add(() => {
-                    this.setState({ pageData: r.pageData });
-                })
-                componentLoader.loadComponentTypes();
-            }).catch(err => {
-                console.error(err);
-            });
+            let componentLoader = new ComponentLoader(r.pageData, this.props.themeName, true);
+
+            componentLoader.loadComponentSuccess.add(() => {
+                this.setState({ pageData: r.pageData });
+            })
+            componentLoader.loadComponentsComplete.add(() => {
+                this.setState({ pageData: r.pageData });
+            })
+            componentLoader.loadComponentTypes();
+        }).catch(err => {
+            console.error(err);
+        });
     }
     emptyPageData() {
         let pageId = guid();

@@ -13,7 +13,8 @@ let cnStrings = {
         selectTheme: "请选择主题",
         template: "模板",
         selectTemplate: "请选择模板"
-    }
+    },
+    pageLoading: "页面加载中..."
 };
 
 export function getStrings() {

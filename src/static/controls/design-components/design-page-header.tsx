@@ -10,7 +10,7 @@ export class DesignPageHeader extends React.Component<PageHeaderProps & { enable
         this.componentContainer.disable();
     }
     render() {
-        let style: React.CSSProperties = { height: this.props.height, display: this.props.visible ? "" : "none" }
+        let style: React.CSSProperties = { height: this.props.height ? this.props.height : null, display: this.props.visible ? "" : "none" }
         return <ComponentContainer id={this.props.id} className={PageHeader.className} style={style} enable={this.props.enable}
             ref={e => this.componentContainer = e || this.componentContainer} />
     }

@@ -5,9 +5,10 @@ import { LocalService } from "../services";
 import { PageHelper } from "../controls/page-helper";
 import { PageData } from "maishu-jueying-core";
 import React = require("react");
-import { createRouter } from "maishu-router";
 import { routers } from "../routers";
-import { errors } from "static/errors";
+import { Action } from "maishu-chitu";
+import ReactDOM = require("react-dom");
+import strings from "../strings";
 
 type WebsiteConfig = typeof w;
 
@@ -33,10 +34,26 @@ class MyApplication extends Application {
                 })
         })
 
+        this.pageShown.add(() => {
+
+        })
+
         window.onpopstate = (event: PopStateEvent) => {
             // alert(`location: ${document.location}, state: ${JSON.stringify(event.state)}`)
             this.showPage(document.location.href);
         }
+    }
+
+    createPageElement(pageName: string, containerName: string) {
+        let element = super.createPageElement(pageName, containerName);
+        element.className = "page";
+        ReactDOM.render(<div className="text-center" style={{ paddingTop: 200, paddingBottom: 200 }}>
+            <i className="fa fa-spinner fa-spin" />
+            <span>
+                {strings.pageLoading}
+            </span>
+        </div>, element);
+        return element;
     }
 
     async loadjs(path: string) {

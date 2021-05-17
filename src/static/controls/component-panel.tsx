@@ -71,7 +71,7 @@ export class ComponentPanel extends React.Component<ComponentToolbarProps, Compo
                 props[this.COMPONENT_DATA] = JSON.stringify(c.data);
                 return <li {...props} title={c.introduce} data-sort-number={c.sortNumber}>
                     <div className="btn-link">
-                        <i className={c.icon} style={{ fontSize: 44, color: 'black' }}
+                        <i className={c.icon} style={{  }}
                             ref={e => {
                                 if (!e) return
 

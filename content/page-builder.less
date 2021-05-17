@@ -1,15 +1,28 @@
 .component-panel {
     display      : flex;
-    margin-bottom: 10px;
-    margin-top   : 10px;
+    flex-wrap    : wrap;
+    margin-bottom: 4px;
+    margin-top   : 0px;
 
     li {
         border      : solid 1px rgb(204, 204, 204);
-        width       : 80px;
-        height      : 80px;
-        margin-right: 10px;
+        width       : 68px;
+        height      : 68px;
+        margin-right: 4px;
         text-align  : center;
         z-index     : 200;
+
+        i {
+            font-size: 32px;
+            color    : black;
+        }
+
+    }
+
+    .empty {
+        text-align: center;
+        width     : 100%;
+        border    : solid 1px #cccccc;
     }
 }
 
@@ -41,11 +54,6 @@
             font-weight: bold;
         }
 
-        .control {
-            // width       :~"calc(100% - @{label-width})";
-            // padding-left: unset;
-        }
-
         .image-cover {
             border: solid 1px #cccccc;
         }
@@ -65,9 +73,11 @@
     }
 
     .page-view {
-        width   : calc(100% - 320px);
-        height  : unset;
-        position: unset;
+        // width   : calc(100% - 320px);
+        height        : unset;
+        position      : unset;
+        display       : flex;
+        flex-direction: column;
 
         .header {
             position: unset;
@@ -101,13 +111,6 @@ button.btn {
     }
 }
 
-.component-panel {
-    .empty {
-        text-align: center;
-        width     : 100%;
-        border    : solid 1px #cccccc;
-    }
-}
 
 .editor-panel {
     label {
@@ -119,8 +122,34 @@ button.btn {
     width: unset;
 }
 
-#main-master {
-    .main {
-        width: calc(100% - 110px);
+.component-property-panel {
+
+    width      : 350px;
+    float      : right;
+    margin-left: 10px;
+
+    .component-panel {
+        z-index: 2000;
+
+        li {
+            padding      : unset;
+            padding-top  : 10px;
+            margin-bottom: 6px;
+        }
     }
+
+    .component-property-panel-inner {
+        &.fixed {
+            position        : fixed;
+            top             : 0;
+            z-index         : 2000;
+            background-color: white;
+        }
+    }
+}
+
+.page-designer {
+    padding-top   : 10px;
+    display       : flex;
+    flex-direction: row;
 }

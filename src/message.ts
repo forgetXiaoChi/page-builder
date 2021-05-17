@@ -67,7 +67,11 @@ export function startMessage(messageHost: string,) {
 /** 随机生成子一个域名， 并绑定*/
 async function createStoreDomain(conn: Connection, appId: string) {
     let storeDomains = conn.getRepository(StoreDomain);
-
+    let entity = await storeDomains.findOne({ applicationId: appId });
+    if (entity) {
+        return;
+    }
+    
     let item: StoreDomain;
     let subDomain: string;
     do {
@@ -99,8 +103,13 @@ export function randomDomainName() {
 export async function createStoreInfo(conn: Connection, msg: MerchantAuditSuccessMessage) {
 
     let storeInfos = conn.getRepository(StoreInfo);
+    let appId = msg.user.data.applicationId;
+    let entity = await storeInfos.findOne(appId);
+    if (entity) {
+        return;
+    }
     let item: StoreInfo = {
-        id: msg.user.data.applicationId, theme: "aixpi", userId: msg.user.id
+        id: appId, theme: "aixpi", userId: msg.user.id
     };
 
     await storeInfos.insert(item);

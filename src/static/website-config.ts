@@ -1,30 +1,30 @@
-
 import { WebsiteConfig } from "maishu-admin-scaffold/static/website-config";
 
 type MyWebsiteConfig = WebsiteConfig & {
     componentStations: { aixpi: string, flone: string, generic: string },
-    componentShare: string,
-    storeUrl: string,
+    componentShare: string, storePort: number
+    // storeUrl: string,
 };
 
 export let libVirtualPath = "lib";
-let node_modules = "node_modules";
+let node_modules = "/node_modules";
+let themeHost = "192.168.2.195:6739";
 let websiteConfig: MyWebsiteConfig = {
     //===================================================
     // 组件站点配置
     componentStations: {
-        aixpi: `http://192.168.2.195:6739/aixpi`,
-        flone: `http://192.168.2.195:6739/flone`,
-        generic: `http://192.168.2.195:6739/generic`,
+        aixpi: `http://${themeHost}/aixpi`,
+        flone: `http://${themeHost}/flone`,
+        generic: `http://${themeHost}/generic`,
         // aixpi: `http://192.168.2.14:6739/aixpi`,
         // flone: `http://192.168.2.14:6739/flone`,
     },
     // componentShare: "http://192.168.2.14:6739/share",
-    componentShare: "http://192.168.2.195:6739/share",
+    componentShare: `http://${themeHost}/share`,
     //===================================================
-    storeUrl: "http://192.168.2.195:5218/",
+    storePort: 5218,
     requirejs: {
-        context: "site",    
+        context: "site",
         shim: {
             "node_modules/bootstrap/js/button": { deps: ["jquery"], exports: "jQuery" },
             "node_modules/bootstrap/js/dropdown": { deps: ["jquery"], exports: "jQuery" },
@@ -37,13 +37,13 @@ let websiteConfig: MyWebsiteConfig = {
             "react": `${node_modules}/react/umd/react.development`,
             "react-dom": `${node_modules}/react-dom/umd/react-dom.development`,
 
-            "maishu-chitu": `${node_modules}/maishu-chitu/dist/index`,
-            "maishu-chitu-react": `${node_modules}/maishu-chitu-react/dist/index`,
-            "maishu-chitu-service": `${node_modules}/maishu-chitu-service/dist/index`,
-            "maishu-dilu-react": `${node_modules}/maishu-dilu-react/dist/index`,
+            "maishu-chitu": `${node_modules}/maishu-chitu/dist/index.min`,
+            "maishu-chitu-react": `${node_modules}/maishu-chitu-react/dist/index.min`,
+            "maishu-chitu-service": `${node_modules}/maishu-chitu-service/dist/index.min`,
+            "maishu-dilu-react": `${node_modules}/maishu-dilu-react/dist/index.min`,
             "maishu-data-page": `${node_modules}/maishu-data-page/dist/index.min`,
             "maishu-image-components": `${node_modules}/maishu-image-components/dist/index`,
-            "maishu-jueying": `${node_modules}/maishu-jueying/dist/index`,
+            "maishu-jueying": `${node_modules}/maishu-jueying/dist/index.min`,
             "maishu-jueying-core": `${node_modules}/maishu-jueying-core/dist/index`,
             "maishu-toolkit": `${node_modules}/maishu-toolkit/dist/index`,
             "maishu-ui-toolkit": `${node_modules}/maishu-ui-toolkit/dist/index`,
@@ -52,11 +52,12 @@ let websiteConfig: MyWebsiteConfig = {
             "maishu-router": `${node_modules}/maishu-router/dist/index`,
 
             "devices": `content/devices.css-1.2/assets/devices.min.css`,
-            "jquery": `${node_modules}/jquery/dist/jquery`,
-            "jquery-ui": `content/jquery-ui-1.12.1/jquery-ui`,
+            "jquery": `${node_modules}/jquery/dist/jquery.min`,
+            "jquery-ui": `content/jquery-ui-1.12.1/jquery-ui.min`,
             "js-md5": `${node_modules}/js-md5/build/md5.min`,
 
             "url-pattern": `${node_modules}/url-pattern/lib/url-pattern`,
+            "aixpi": "/aixpi"
         }
     },
     menuItems: [
@@ -79,6 +80,7 @@ let websiteConfig: MyWebsiteConfig = {
             id: "D0D26AA2-066F-478A-B19C-D8FB8F660905", name: "页面代码", path: "#html-snippet", sortNumber: 40
         },
     ],
-    mode: "development",
+    mode: "production",
+    
 };
 export default websiteConfig;

@@ -1,5 +1,5 @@
 import { DataListPage } from "maishu-data-page";
-import { rules } from "maishu-dilu";
+import { rules } from "maishu-dilu-react";
 import { UrlRewrite } from "../../entities";
 import { dataSources } from "../services/data-sources";
 
