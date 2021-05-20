@@ -42,6 +42,9 @@ function toMenuItem(r: PageRecord): MenuItem {
     else if (pageName.endsWith("product")) {
         return { id: r.id, name: "商品", type: "menu", sortNumber: 120, path: `#${r.themeName}-page-edit?name=${r.name}` }
     }
+    else if (pageName == "base-template") {
+        return { id: r.id, name: "模板", type: "menu", sortNumber: 120, path: `#${r.themeName}-page-edit?name=${r.name}` }
+    }
 
     return null;
 }
