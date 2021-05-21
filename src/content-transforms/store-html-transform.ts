@@ -7,6 +7,9 @@ import * as url from "url";
 import * as querystring from "querystring";
 import { IncomingMessage } from "http";
 
+
+const defaultTheme = "aixpi";
+
 export class StoreHtmlTransform implements ContentTransform {
     async execute(result: RequestResult, context: RequestContext): Promise<RequestResult> {
         let contentType = result.headers == null ? "" : result.headers["content-type"] || result.headers["Content-Type"] || "";
@@ -57,6 +60,9 @@ export class StoreHtmlTransform implements ContentTransform {
         if (storeDomain) {
             script.innerHTML = script.innerHTML + `window["storeDomain"]='${storeDomain.domain}';\r\n`;
             applicationId = storeDomain.applicationId;
+            let storeInfo = await conn.getRepository(StoreInfo).findOne({ id: storeDomain.applicationId });
+            let storeTheme = storeInfo?.theme || defaultTheme;
+            script.innerHTML = script.innerHTML + `window["storeTheme"]='${storeTheme}';\r\n`;
         }
         else {
             let u = url.parse(context.url);

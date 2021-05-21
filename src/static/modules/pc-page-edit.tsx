@@ -92,7 +92,7 @@ export default class PCPageEdit extends React.Component<Props, State> {
             let componentInfos = c.components;
             if (c.components != null) {
                 componentInfos = componentInfos.filter(o => o.displayName != null);
-                this.setState({ componentInfos, groups: c.groups });
+                this.setState({ componentInfos });
                 componentInfos.forEach(c => {
                     c.data = c.data || { id: guid(), type: c.type, props: {} };
                 })

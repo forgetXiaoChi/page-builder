@@ -6,6 +6,7 @@ import { ComponentInfo } from "../model";
 import websiteConfig from "../website-config";
 import { errorHandle } from "../error-handle";
 import { errors } from "../errors";
+import { WebsiteConfig } from "maishu-chitu-scaffold/static/types";
 
 let appId = getApplicationId();
 if (appId)
@@ -196,11 +197,6 @@ export class LocalService {
         return config.components;
     }
 
-    async componentGroups(themeName: string) {
-        let config = await this.componentStationConfig("designtime", themeName);
-        return config.groups;
-    }
-
     private _componentStationConfig: ComponentStationConfig;
     async componentStationConfig(times: "designtime" | "runtime", themeName: string): Promise<ComponentStationConfig> {
         if (!themeName)
@@ -209,8 +205,8 @@ export class LocalService {
         if (this._componentStationConfig != null)
             return this._componentStationConfig;
 
-        let url = LocalService.url(`${themeName}/website-config.js`);
-        this._componentStationConfig = await this.loadJS(url);
+        // let url = LocalService.url(`${themeName}/website-config.js`);
+        this._componentStationConfig = await this.loadWebsiteConfig(themeName);
 
         let _componentInfos = this._componentStationConfig.components;
         if (!_componentInfos)
@@ -244,6 +240,20 @@ export class LocalService {
 
 
         return this._componentStationConfig;
+    }
+
+    private async loadWebsiteConfig(themeName: string) {
+        let url = LocalService.url(`${themeName}/website-config.js`);
+        let c: ComponentStationConfig = await this.loadJS(url);
+
+        let contexts = requirejs.exec("contexts");
+        let contextName = websiteConfig.requirejs?.context || "";
+        let context = contexts[contextName]
+        if (context != null && c.requirejs?.paths != null) {
+            context.configure({ paths: c.requirejs.paths })
+        }
+
+        return c;
     }
 
     async templateList(): Promise<PageRecord[]> {
@@ -305,8 +315,8 @@ export class LocalService {
     }
 }
 
-export interface ComponentStationConfig {
+export interface ComponentStationConfig extends WebsiteConfig {
     components: ComponentInfo[],
-    groups: { name: string, id: string }[],
-    themes: { name: string, path: string, title: string, image: string, }[],
+    // groups: { name: string, id: string }[],
+    // themes: { name: string, path: string, title: string, image: string, }[],
 }

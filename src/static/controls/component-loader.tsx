@@ -87,7 +87,7 @@ export class ComponentLoader {
             this.loadComponentsComplete.fire({});
             return;
         }
-        
+
         let executedCount = 0;
         for (let i = 0; i < this.typesToLoad.length; i++) {
             let type = this.typesToLoad[i];

@@ -57,7 +57,6 @@ let websiteConfig: MyWebsiteConfig = {
             "js-md5": `${node_modules}/js-md5/build/md5.min`,
 
             "url-pattern": `${node_modules}/url-pattern/lib/url-pattern`,
-            "aixpi": "/aixpi"
         }
     },
     menuItems: [
@@ -81,6 +80,6 @@ let websiteConfig: MyWebsiteConfig = {
         },
     ],
     mode: "production",
-    
+
 };
 export default websiteConfig;

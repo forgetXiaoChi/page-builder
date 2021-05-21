@@ -8,7 +8,7 @@ export default class Preview extends React.Component {
                 <meta http-equiv="X-UA-Compatible" content="IE=10" />
                 <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
                 <title></title>
-                <link rel="stylesheet" type="text/css" href="./content/bootstrap.css" />
+                <link rel="stylesheet" type="text/css" href="/content/bootstrap.css" />
                 <style type="text/css">
                     .preview .page-view .header {
 
