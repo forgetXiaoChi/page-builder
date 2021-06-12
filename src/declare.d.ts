@@ -24,3 +24,8 @@ declare interface RequirejsContext {
     require(module: string): any;
 
 }
+
+type RuntimeContext = Pick<import("maishu-chitu").Application, "createService"> & {
+    readonly token: string;
+
+};

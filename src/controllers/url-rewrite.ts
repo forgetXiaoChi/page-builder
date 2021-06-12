@@ -1,5 +1,5 @@
 import { DataHelper } from "maishu-node-data";
-import { action, controller, routeData, serverContext, ServerContext } from "maishu-nws-mvc";
+import { action, controller, routeData } from "maishu-nws-mvc";
 import { guid } from "maishu-toolkit";
 import { DataSourceSelectArguments } from "maishu-wuzhui";
 import { Connection } from "typeorm";
@@ -19,7 +19,7 @@ export class UrlRewriteController {
         else {
             d.args.filter = `${APP_ID} = '${appId}'`
         }
-        
+
         let urlRewrites = conn.getRepository(UrlRewrite);
         let r = DataHelper.list(urlRewrites, { selectArguments: d.args });
         return r;

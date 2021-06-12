@@ -2,10 +2,7 @@ import { ContentTransform, RequestContext, RequestResult } from "maishu-node-mvc
 import stream = require("stream");
 import * as HTMLParser from "node-html-parser";
 import { getMyConnection } from "../decoders";
-import { HtmlSnippet, StoreDomain, StoreInfo } from "../entities";
-import * as url from "url";
-import * as querystring from "querystring";
-import { IncomingMessage } from "http";
+import { StoreDomain } from "../entities";
 
 export class AdminHtmlTransform implements ContentTransform {
     async execute(result: RequestResult, context: RequestContext): Promise<RequestResult> {
@@ -29,6 +26,7 @@ export class AdminHtmlTransform implements ContentTransform {
             let script = new HTMLParser.HTMLElement("script", {}, "", null);
             htmlElement.appendChild(script);
             script.innerHTML = script.innerHTML + `\r\nwindow["application-id"]='${storeDomain.applicationId}';\r\n`;
+            script.innerHTML = script.innerHTML + `\r\nwindow["applicationId"]='${storeDomain.applicationId}';\r\n`;
         }
      
         result.content = htmlElement.toString();

@@ -14,7 +14,9 @@ export default function (app: Application) {
 
 let pageMenuItems: MenuItem[] = [];
 function updateMenuItems(app: Application) {
-    LocalService.getPages().then(r => {
+
+    let localService = app.createService(LocalService);
+    localService.getPages().then(r => {
 
         let menuItems = app.mainMaster.state.menuItems;
         menuItems = menuItems.filter(o => pageMenuItems.map(c => c.id).indexOf(o.id) < 0);

@@ -8,23 +8,34 @@ import { buttonOnClick, hideDialog, showDialog } from "maishu-ui-toolkit";
 import strings from "../strings";
 import { FormValidator, rules } from "maishu-dilu-react";
 import { PageHelper } from "../controls/page-helper";
+import { PageProps } from "maishu-chitu-react"
 
 interface State {
     item: Partial<PageRecord>,
-    templates?: PageRecord[],
-}
-let themes = ["aixpi", "flone", "generic"]
-let localService = new LocalService();
 
-export default class PageListPage extends React.Component<{}, State> {
+}
+// let themes = ["aixpi", "flone", "generic"]
+// let localService = new LocalService();
+
+interface Props extends PageProps {
+    // data: {
+    templates?: PageRecord[],
+    themes?: string[],
+    // }
+}
+
+export default class PageListPage extends React.Component<Props, State> {
     private dialogElement: HTMLElement;
     private validator = new FormValidator();
     private gridView: GridView<PageRecord>;
+    private localService: LocalService;
 
     constructor(props: PageListPage["props"]) {
         super(props);
 
         this.state = { item: {} };
+
+        this.localService = this.props.app.createService(LocalService);
     }
     tableRef(e: HTMLTableElement) {
         if (e == null || this.gridView != null) return;
@@ -71,7 +82,7 @@ export default class PageListPage extends React.Component<{}, State> {
     }
     async editUrl(themeName: string, name: string) {
         if (!themeName) {
-            themeName = await localService.getTheme();
+            themeName = await this.localService.getTheme();
         }
 
         return `#/${LocalService.url(`${themeName}-page-edit?name=${name}`)}`;
@@ -89,6 +100,7 @@ export default class PageListPage extends React.Component<{}, State> {
     async deleteItem(item: PageRecord) {
         await this.gridView.dataSource.delete(item);
     }
+
     async confirmAdd() {
         if (!this.validator.check())
             return;
@@ -103,14 +115,22 @@ export default class PageListPage extends React.Component<{}, State> {
             this.setState({ item: {} });
         }, 1000)
     }
-    componentDidMount() {
-        localService.templateList().then(items => {
-            this.setState({ templates: items });
-        })
+
+    static async loadProps(props: PageProps): Promise<Pick<Props, "themes" | "templates">> {
+        let localService: LocalService = props.app.createService<any>(LocalService)
+        let [templates, themes] = await Promise.all([
+            localService.templateList(),
+            localService.getThemes()
+        ])
+
+        return { themes, templates };
     }
+
     render() {
-        let { item, templates } = this.state;
-        if (templates == null) {
+        let { item } = this.state;
+        let { themes, templates } = this.props;
+
+        if (themes == undefined || templates == undefined) {
             return <div>{strings.dataLoading}</div>
         }
 
@@ -159,7 +179,6 @@ export default class PageListPage extends React.Component<{}, State> {
                                             <option value="">{strings.pageList.selectTheme}</option>
                                             {themes.map(t => <option key={t} value={t}>{t}</option>)}
                                         </select>
-                                        {/* {this.validator.field(item.themeName, [rules.required(strings.pageList.selectTheme)])} */}
                                     </span>
                                 </div>
                                 <div className="form-group clearfix input-control">

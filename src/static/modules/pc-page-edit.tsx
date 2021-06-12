@@ -62,7 +62,8 @@ export default class PCPageEdit extends React.Component<Props, State> {
 
     async getThemeName() {
         let fileName = this.props.source.name.split("/").pop();
-        let themeName = fileName.split("-").shift();
+        console.assert(fileName.endsWith("-page-edit"));
+        let themeName = fileName.substr(0, fileName.length - "-page-edit".length);
         if (themeName == "pc")
             themeName = await localService.getTheme();
 

@@ -6,7 +6,6 @@ import ReactDOM = require("react-dom");
 import strings from "../strings";
 
 
-// location.href = "http://192.168.2.195:5217/7bbfa36c-8115-47ad-8d47-9e52b58e7efd/6a9f7e44-5554-baf3-31f9-9823387342c7/0964cb3b-1cd4-4894-830e-1b154b8bbf05";
 class MyApplication extends Application {
 
     private req: Function;
@@ -17,8 +16,6 @@ class MyApplication extends Application {
         this.req = req;
         this.pageCreated.add((app, page) => {
             console.log(page.data.id);
-
-
         })
 
         this.pageShown.add(() => {
@@ -26,7 +23,6 @@ class MyApplication extends Application {
         })
 
         window.onpopstate = (event: PopStateEvent) => {
-            // alert(`location: ${document.location}, state: ${JSON.stringify(event.state)}`)
             this.showPage(document.location.href);
         }
     }
@@ -79,8 +75,11 @@ class MyApplication extends Application {
                 break;
             }
         }
-        if (m == null)
-            throw new Error("Parse url fail.");
+
+        if (a.search != null && a.search.length > 1) {
+            var q = super.pareeUrlQuery(a.search.substr(1));
+            values = Object.assign(values, q);
+        }
 
         return { pageName: "page", values };
     }

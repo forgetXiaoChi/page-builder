@@ -1,6 +1,6 @@
 import { controller, action, routeData, ContentResult } from "maishu-node-mvc";
 import { Connection, DataHelper, SelectArguments } from "maishu-node-data";
-import { PageRecord } from "../entities";
+import { PageRecord, StoreInfo } from "../entities";
 import { errors } from "../static/errors";
 import { guid } from "maishu-toolkit";
 import { connection, currentAppId } from "../decoders";
@@ -68,10 +68,16 @@ export class PageDataController {
         if (name == null && id == null)
             throw new Error("One of name or id of route data field can not be null.")
 
+        let storeInfos = conn.getRepository(StoreInfo);
+        let storeInfo = await storeInfos.findOne({ id: appId });
+        if (!storeInfo) {
+            throw new Error(`Store ${storeInfo.id} is not exists.`);
+        }
+
         let repository = conn.getRepository(PageRecord);
         let item: PageRecord;
         if (name != null) {
-            item = await repository.findOne({ name, applicationId: appId });
+            item = await repository.findOne({ name, applicationId: appId, themeName: storeInfo.theme });
         }
         else {
             item = await repository.findOne(id);

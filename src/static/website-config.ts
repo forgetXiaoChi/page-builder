@@ -1,14 +1,18 @@
 import { WebsiteConfig } from "maishu-admin-scaffold/static/website-config";
 
+//==========================================================================
+// 常用配置
+export let themeHost = "192.168.2.195:6739";
+let storePort = 5218;
+//==========================================================================
+
 type MyWebsiteConfig = WebsiteConfig & {
-    componentStations: { aixpi: string, flone: string, generic: string },
+    componentStations: { aixpi: string, flone: string, generic: string, "gemwon-pc": string },
     componentShare: string, storePort: number
-    // storeUrl: string,
 };
 
 export let libVirtualPath = "lib";
 let node_modules = "/node_modules";
-let themeHost = "192.168.2.195:6739";
 let websiteConfig: MyWebsiteConfig = {
     //===================================================
     // 组件站点配置
@@ -16,13 +20,11 @@ let websiteConfig: MyWebsiteConfig = {
         aixpi: `http://${themeHost}/aixpi`,
         flone: `http://${themeHost}/flone`,
         generic: `http://${themeHost}/generic`,
-        // aixpi: `http://192.168.2.14:6739/aixpi`,
-        // flone: `http://192.168.2.14:6739/flone`,
+        "gemwon-pc": `http://${themeHost}/gemwon-pc`,
     },
-    // componentShare: "http://192.168.2.14:6739/share",
     componentShare: `http://${themeHost}/share`,
     //===================================================
-    storePort: 5218,
+    storePort: storePort,
     requirejs: {
         context: "site",
         shim: {
@@ -57,6 +59,7 @@ let websiteConfig: MyWebsiteConfig = {
             "js-md5": `${node_modules}/js-md5/build/md5.min`,
 
             "url-pattern": `${node_modules}/url-pattern/lib/url-pattern`,
+            "ejs": `${node_modules}/ejs/ejs.min`,
         }
     },
     menuItems: [
@@ -79,7 +82,8 @@ let websiteConfig: MyWebsiteConfig = {
             id: "D0D26AA2-066F-478A-B19C-D8FB8F660905", name: "页面代码", path: "#html-snippet", sortNumber: 40
         },
     ],
-    mode: "production",
+    // mode: "production",
+    mode: "development",
 
 };
 export default websiteConfig;

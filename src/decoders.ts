@@ -3,14 +3,9 @@ import { getConnectionManager, createConnection, getConnection, Connection } fro
 import { ConnectionOptions } from "maishu-node-data";
 import * as querystring from "querystring";
 import { StoreDomain } from "./entities";
+import { config } from "./config";
 
-let db: ConnectionOptions = {
-    type: "mysql", username: "root", password: "81263", name: "taro-builder",
-    database: "taro-builder", entities: ["./entities.js"],
-    synchronize: false,
-    // host: "127.0.0.1", port: 3306,
-    host: "192.168.2.94", port: 43306
-};
+
 
 export type ServerContextData = {
     db: ConnectionOptions,
@@ -38,11 +33,11 @@ export let connection = createParameterDecorator(() => {
 export function getMyConnection() {
     return new Promise<Connection>(async (resolve, reject) => {
         let connectionManager = getConnectionManager();
-        let name = db.database as string;
+        let name = config.db.database as string;
         console.assert(name != null);
         let connection: Connection;
         if (!connectionManager.has(name)) {
-            let dbOptions = db;
+            let dbOptions = config.db;
             connection = await createConnection(dbOptions);
         }
         else {

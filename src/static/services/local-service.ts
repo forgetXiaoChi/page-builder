@@ -12,7 +12,7 @@ let appId = getApplicationId();
 if (appId)
     Service.headers["application-id"] = appId;
 
-let service = new Service(err => errorHandle(err));
+// let service = new Service(err => errorHandle(err));
 
 function getApplicationId() {
     if (localStorage.getItem("application-id")) {
@@ -23,10 +23,7 @@ function getApplicationId() {
 }
 
 
-export class LocalService {
-
-    constructor() {
-    }
+export class LocalService extends Service {
 
     static url(path: string) {
         let contexts = requirejs.exec("contexts");
@@ -89,105 +86,105 @@ export class LocalService {
 
     pageRecordList(args: DataSourceSelectArguments) {
         let url = LocalService.url("api/page-data/list");
-        return service.getByJson<DataSourceSelectResult<PageRecord>>(url, { args });
+        return this.getByJson<DataSourceSelectResult<PageRecord>>(url, { args });
     }
     removePageRecord(id: string) {
         let url = LocalService.url("api/page-data/remove");
-        return service.postByJson(url, { id });
+        return this.postByJson(url, { id });
     }
     async addPageRecord(item: Partial<PageRecord>) {
-        let r = await service.postByJson(LocalService.url("api/page-data/add"), { item });
+        let r = await this.postByJson(LocalService.url("api/page-data/add"), { item });
         Object.assign(item, r);
         return item;
     }
     async updatePageRecord(item: Partial<PageRecord>) {
-        let r = await service.postByJson(LocalService.url("api/page-data/update"), { item });
+        let r = await this.postByJson(LocalService.url("api/page-data/update"), { item });
         Object.assign(item, r);
         return item;
     }
     async getPageRecord(id: string): Promise<PageRecord> {
         if (!id) throw errors.argumentNull("id");
 
-        let r = await service.getByJson<PageRecord>(LocalService.url("api/page-data/item"), { id });
+        let r = await this.getByJson<PageRecord>(LocalService.url("api/page-data/item"), { id });
         return r;
     }
 
     async getPageDataByName(name: string): Promise<PageRecord> {
         if (!name) throw errors.argumentNull("name");
-        let r = await service.getByJson<PageRecord>(LocalService.url("api/page-data/item"), { name });
+        let r = await this.getByJson<PageRecord>(LocalService.url("api/page-data/item"), { name });
         return r;
     }
 
     storeDomainList(args: DataSourceSelectArguments): Promise<DataSourceSelectResult<StoreDomain>> {
         let url = LocalService.url("api/store-domain/list");
-        return service.getByJson<DataSourceSelectResult<StoreDomain>>(url);
+        return this.getByJson<DataSourceSelectResult<StoreDomain>>(url);
     }
 
     insertStoreDomain(item: StoreDomain) {
         let url = LocalService.url("api/store-domain/insert");
-        return service.postByJson(url, { item });
+        return this.postByJson(url, { item });
     }
 
     updateStoreDomain(item: StoreDomain) {
         let url = LocalService.url("api/store-domain/update");
-        return service.postByJson(url, { item });
+        return this.postByJson(url, { item });
     }
 
     deleteStoreDomain(item: StoreDomain) {
         let url = LocalService.url("api/store-domain/delete");
-        return service.delete(url, { id: item.id });
+        return this.delete(url, { id: item.id });
     }
 
     defaultStoreDomain() {
         let url = LocalService.url("api/store-domain/default");
-        return service.getByJson<string>(url);
+        return this.getByJson<string>(url);
     }
 
     urlRewriteList(args: DataSourceSelectArguments) {
         let url = LocalService.url("api/url-rewrite/list");
-        return service.getByJson<DataSourceSelectResult<UrlRewrite>>(url, { args });
+        return this.getByJson<DataSourceSelectResult<UrlRewrite>>(url, { args });
     }
 
     async urlRewriteInsert(item: UrlRewrite) {
         let url = LocalService.url("api/url-rewrite/insert");
-        let r = await service.postByJson(url, { item });
+        let r = await this.postByJson(url, { item });
         Object.assign(item, r);
         return r;
     }
 
     async urlRewriteUpdate(item: UrlRewrite) {
         let url = LocalService.url("api/url-rewrite/update");
-        let r = await service.postByJson(url, { item });
+        let r = await this.postByJson(url, { item });
         Object.assign(item, r);
         return r;
     }
 
     async urlRewriteDelete(item: UrlRewrite) {
         let url = LocalService.url("api/url-rewrite/delete");
-        let r = await service.postByJson(url, { item });
+        let r = await this.postByJson(url, { item });
         return r;
     }
 
     async htmlSnippetList(args: DataSourceSelectArguments) {
         let url = LocalService.url("api/html-snippet/list");
-        return service.getByJson<DataSourceSelectResult<HtmlSnippet>>(url, { args });
+        return this.getByJson<DataSourceSelectResult<HtmlSnippet>>(url, { args });
     }
 
     async htmlSnippetInsert(item: HtmlSnippet) {
         let url = LocalService.url("api/html-snippet/insert");
-        return service.postByJson(url, { item });
+        return this.postByJson(url, { item });
     }
 
     async htmlSnippetUpdate(item: HtmlSnippet) {
         let url = LocalService.url("api/html-snippet/update");
-        let r = await service.postByJson(url, { item });
+        let r = await this.postByJson(url, { item });
         Object.assign(item, r);
         return r;
     }
 
     async htmlSnippetDelete(item: HtmlSnippet) {
         let url = LocalService.url("api/html-snippet/delete");
-        let r = await service.postByJson(url, { id: item.id });
+        let r = await this.postByJson(url, { id: item.id });
         return r;
     }
 
@@ -205,7 +202,6 @@ export class LocalService {
         if (this._componentStationConfig != null)
             return this._componentStationConfig;
 
-        // let url = LocalService.url(`${themeName}/website-config.js`);
         this._componentStationConfig = await this.loadWebsiteConfig(themeName);
 
         let _componentInfos = this._componentStationConfig.components;
@@ -250,6 +246,8 @@ export class LocalService {
         let contextName = websiteConfig.requirejs?.context || "";
         let context = contexts[contextName]
         if (context != null && c.requirejs?.paths != null) {
+
+  
             context.configure({ paths: c.requirejs.paths })
         }
 
@@ -258,7 +256,7 @@ export class LocalService {
 
     async templateList(): Promise<PageRecord[]> {
         let url = LocalService.url("api/page-data/template-list");
-        let r = service.getByJson<PageRecord[]>(url);
+        let r = this.getByJson<PageRecord[]>(url);
         return r;
     }
 
@@ -276,7 +274,7 @@ export class LocalService {
     /** 设置模板 */
     async setTheme(themeName: string) {
         let url = LocalService.url("api/home/set-theme");
-        let r = await service.postByJson(url, { themeName });
+        let r = await this.postByJson(url, { themeName });
 
         LocalService.themeChanged.fire({ themeName });
 
@@ -286,13 +284,13 @@ export class LocalService {
     /** 获取模板 */
     async getTheme(): Promise<string> {
         let url = LocalService.url("api/home/get-theme");
-        let r = await service.getByJson<string>(url);
+        let r = await this.getByJson<string>(url);
         return r;
     }
 
-    static async getPages(): Promise<PageRecord[]> {
+    async getPages(): Promise<PageRecord[]> {
         let url = LocalService.url("api/home/get-pages");
-        let pageRecords = await service.getByJson<PageRecord[]>(url);
+        let pageRecords = await this.getByJson<PageRecord[]>(url);
         return pageRecords;
     }
 
@@ -312,6 +310,11 @@ export class LocalService {
         }
 
         return null;
+    }
+
+    getThemes(): Promise<string[]> {
+        let url = LocalService.url("api/home/themes");
+        return this.get<string[]>(url);
     }
 }
 

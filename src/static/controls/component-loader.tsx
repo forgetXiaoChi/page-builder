@@ -26,6 +26,10 @@ export interface ComponentInfo {
     layout?: string;
 }
 
+export interface DataComponent<Props> {
+    loadProps: (props: Props) => Promise<Partial<Props>>
+    loadData: (props: Props) => Promise<any>
+}
 
 let localService = new LocalService();
 export class ComponentLoader {
@@ -145,16 +149,17 @@ async function loadComponentType(typeName: string, isDesignMode: boolean, themeN
 
     let componentType = await new Promise<React.ComponentClass<any>>((resolve, reject) => {
         localRequirejs([`${path}`], (mod) => {
-            let compoenntType: React.ComponentClass<any> = mod[typeName] || mod["default"];
-            if (compoenntType == null)
+            let compoenntType1: React.ComponentClass<any> = mod[typeName] || mod["default"];
+            if (compoenntType1 == null)
                 throw errors.moduleNotExport(path, typeName);
 
-            if (typeof compoenntType["loadData"] == "function") {
-                compoenntType = createComponent(compoenntType["loadData"], compoenntType)
+            let d = compoenntType1 as any as DataComponent<any>;
+            if (typeof d.loadData == "function") {
+                compoenntType1 = createComponent(d.loadData, compoenntType1)
             }
 
-            componentTypes[typeName] = compoenntType;
-            resolve(compoenntType);
+            componentTypes[typeName] = compoenntType1;
+            resolve(compoenntType1);
 
         }, err => {
             let text = typeof err == "string" ? err : err.message;

@@ -7,7 +7,7 @@ start({
     db: {
         type: "mysql", username: "root", password: "81263", name: "taro-builder",
         database: "taro-builder", entities: ["../out/entities.js"],
-        synchronize: true,
+        synchronize: false,
         host: "192.168.2.94", port: 43306
     },
     menuItems: [

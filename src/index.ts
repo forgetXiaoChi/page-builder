@@ -43,6 +43,7 @@ export async function start(settings: Settings) {
     virtualPaths["/static/node_modules"] = path.join(__dirname, "../node_modules");
     virtualPaths["/static/content"] = path.join(__dirname, "../content");
     virtualPaths["/static/modules/content"] = path.join(__dirname, "../content/modules");
+    virtualPaths["/static/css.js"] = path.join(__dirname, "../node_modules/maishu-requirejs-plugins/src/css.js");
 
     for (let themeName in websiteConfig.componentStations) {
         virtualPaths[`/static/modules/${themeName}-page-edit.js`] = path.join(__dirname, "static/modules/pc-page-edit.js");
@@ -53,6 +54,7 @@ export async function start(settings: Settings) {
     let componentStations = websiteConfig.componentStations || {};
     for (let c in componentStations) {
         proxy[`^/${c}/(\\S*)`] = `${componentStations[c]}/$1`;
+        proxy[`^/site/${c}/(\\S*)`] = `${componentStations[c]}/$1`;
     }
 
     proxy[`^/share/(\\S*)`] = `${websiteConfig.componentShare}/$1`;

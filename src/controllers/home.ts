@@ -4,7 +4,8 @@ import { connection, currentAppId } from "../decoders";
 import { Connection, } from "maishu-node-data";
 import { errors } from "../static/errors";
 import { PageRecord, StoreInfo } from "../entities";
-
+import websiteConfig, { themeHost } from "../static/website-config";
+import { Service } from "maishu-chitu-service";
 
 @controller("api/home")
 export class HomeController {
@@ -56,12 +57,18 @@ export class HomeController {
         let storeInfos = conn.getRepository(StoreInfo);
         let storeInfo = await storeInfos.findOne(appId);
         if (storeInfo == null) {
-            // storeInfo = { id: appId, theme: DefaultTheme };
-            // storeInfos.insert(storeInfo);
             throw errors.objectNotExists("StoreInfo", appId);
         }
 
         return storeInfo;
+    }
+
+    @action("themes")
+    async themes() {
+        let url = `http://${themeHost}/themes`;
+        let service = new Service();
+        let themes = await service.get<string[]>(url);
+        return themes;
     }
 
 
