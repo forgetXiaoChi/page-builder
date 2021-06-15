@@ -14,14 +14,12 @@ interface State {
     item: Partial<PageRecord>,
 
 }
-// let themes = ["aixpi", "flone", "generic"]
-// let localService = new LocalService();
 
 interface Props extends PageProps {
-    // data: {
-    templates?: PageRecord[],
-    themes?: string[],
-    // }
+    data: {
+        templates?: PageRecord[],
+        themes?: string[],
+    }
 }
 
 export default class PageListPage extends React.Component<Props, State> {
@@ -39,7 +37,6 @@ export default class PageListPage extends React.Component<Props, State> {
     }
     tableRef(e: HTMLTableElement) {
         if (e == null || this.gridView != null) return;
-
         this.gridView = createGridView({
             element: e,
             dataSource: dataSources.pageRecords,
@@ -116,7 +113,7 @@ export default class PageListPage extends React.Component<Props, State> {
         }, 1000)
     }
 
-    static async loadProps(props: PageProps): Promise<Pick<Props, "themes" | "templates">> {
+    static async loadData(props: PageProps): Promise<Props["data"]> {
         let localService: LocalService = props.app.createService<any>(LocalService)
         let [templates, themes] = await Promise.all([
             localService.templateList(),
@@ -128,7 +125,7 @@ export default class PageListPage extends React.Component<Props, State> {
 
     render() {
         let { item } = this.state;
-        let { themes, templates } = this.props;
+        let { themes, templates } = this.props.data || {};
 
         if (themes == undefined || templates == undefined) {
             return <div>{strings.dataLoading}</div>
