@@ -2,7 +2,7 @@ import { WebsiteConfig } from "maishu-admin-scaffold/static/website-config";
 
 //==========================================================================
 // 常用配置
-export let themeHost = "192.168.2.195:6739";
+export let themeHost = "127.0.0.1:6739";
 let storePort = 5218;
 //==========================================================================
 
@@ -60,6 +60,8 @@ let websiteConfig: MyWebsiteConfig = {
 
             "url-pattern": `${node_modules}/url-pattern/lib/url-pattern`,
             "ejs": `${node_modules}/ejs/ejs.min`,
+
+            "js-cookie":`${node_modules}/js-cookie/src/js.cookie`,
         }
     },
     menuItems: [
